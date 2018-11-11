@@ -2,14 +2,16 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
+    "start": "ts-node ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "poffm",
   "license": "ISC",
   "dependencies": {
-    "sequelize": "^4.41.1"
+    "sequelize": "^4.41.1",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6"
   },
   "devDependencies": {
     "@types/node": "^10.12.5",

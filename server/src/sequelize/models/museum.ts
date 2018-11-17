@@ -1,6 +1,6 @@
 "use strict";
 
-import { Sequelize, STRING, INTEGER, Instance } from "sequelize";
+import { Sequelize, STRING, DOUBLE, Instance } from "sequelize";
 
 export interface MuseumAttributes {
   id?: number;
@@ -9,14 +9,10 @@ export interface MuseumAttributes {
   alternateName?: string;
   museumType?: string;
   institutionName?: string;
-  streetAddressAdministrative?: string;
-  cityAdministrative?: string;
-  stateAdministrative?: string;
-  zipCodeAdministrative?: string;
-  streetAddressPhysical?: string;
-  cityPhysical?: string;
-  statePhysical?: string;
-  zipCodePhysical?: string;
+  streetAddress?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
   phoneNumber?: string;
   latitude?: number;
   longitude?: number;
@@ -33,17 +29,13 @@ export const museumFactory = (sequelize: Sequelize) => {
       alternateName: STRING,
       museumType: STRING,
       institutionName: STRING,
-      streetAddressAdministrative: STRING,
-      cityAdministrative: STRING,
-      stateAdministrative: STRING,
-      zipCodeAdministrative: STRING,
-      streetAddressPhysical: STRING,
-      cityPhysical: STRING,
-      statePhysical: STRING,
-      zipCodePhysical: STRING,
+      streetAddress: STRING,
+      city: STRING,
+      state: STRING,
+      zipCode: STRING,
       phoneNumber: STRING,
-      latitude: INTEGER,
-      longitude: INTEGER
+      latitude: DOUBLE,
+      longitude: DOUBLE
     },
     {}
   );

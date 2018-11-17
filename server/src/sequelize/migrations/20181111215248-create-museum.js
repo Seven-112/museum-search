@@ -24,38 +24,26 @@ module.exports = {
       institutionName: {
         type: Sequelize.STRING
       },
-      streetAddressAdministrative: {
+      streetAddress: {
         type: Sequelize.STRING
       },
-      cityAdministrative: {
+      city: {
         type: Sequelize.STRING
       },
-      stateAdministrative: {
+      state: {
         type: Sequelize.STRING
       },
-      zipCodeAdministrative: {
-        type: Sequelize.STRING
-      },
-      streetAddressPhysical: {
-        type: Sequelize.STRING
-      },
-      cityPhysical: {
-        type: Sequelize.STRING
-      },
-      statePhysical: {
-        type: Sequelize.STRING
-      },
-      zipCodePhysical: {
+      zipCode: {
         type: Sequelize.STRING
       },
       phoneNumber: {
         type: Sequelize.STRING
       },
       latitude: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DOUBLE
       },
       longitude: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DOUBLE
       },
       createdAt: {
         allowNull: false,

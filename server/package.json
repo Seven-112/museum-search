@@ -5,11 +5,13 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js"
+    "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js",
+    "index": "ts-node ./src/build-elasticsearch-index.ts"
   },
   "author": "poffm",
   "license": "ISC",
   "dependencies": {
+    "elasticsearch": "^15.2.0",
     "mysql2": "^1.6.4",
     "sequelize": "^4.41.1",
     "ts-node": "^7.0.1",
@@ -17,6 +19,7 @@
     "xlsx": "^0.14.1"
   },
   "devDependencies": {
+    "@types/elasticsearch": "^5.0.28",
     "@types/node": "^10.12.5",
     "@types/sequelize": "^4.27.30",
     "@types/xlsx": "0.0.36",

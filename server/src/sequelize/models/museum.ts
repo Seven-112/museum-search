@@ -1,5 +1,3 @@
-"use strict";
-
 import { Sequelize, STRING, DOUBLE, Instance } from "sequelize";
 
 export interface MuseumAttributes {

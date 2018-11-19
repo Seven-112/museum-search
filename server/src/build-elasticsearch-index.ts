@@ -1,12 +1,14 @@
 import { Client } from "elasticsearch";
 import { db } from "./sequelize/models";
 
+require('dotenv').config();
+
 /**
  * Builds the elasticsearch museums index.
  */
 const buildMuseumsIndex = async () => {
   const esClient = new Client({
-    host: process.env.ES_HOST || "localhost:9200"
+    host: process.env.ES_HOST
   });
 
   await esClient.ping({});

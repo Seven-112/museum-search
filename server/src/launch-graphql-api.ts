@@ -1,9 +1,11 @@
 import { ApolloServer, gql, IResolvers } from "apollo-server";
 import { Client } from "elasticsearch";
 
+require('dotenv').config();
+
 // Get elasticsearch client.
 const esClient = new Client({
-  host: process.env.ES_HOST || "192.168.99.100:9200"
+  host: process.env.ES_HOST
 });
 
 // GraphQL schema.

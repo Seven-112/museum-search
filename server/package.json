@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ts-node ./src/launch-graphql-api.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "sequelize db:migrate",
     "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js",
-    "index": "ts-node ./src/build-elasticsearch-index.ts"
+    "index": "ts-node ./src/build-elasticsearch-index.ts",
+    "start": "ts-node ./src/launch-graphql-api.ts"
   },
   "author": "poffm",
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.2.2",
+    "dotenv": "^6.1.0",
     "elasticsearch": "^15.2.0",
     "graphql": "^14.0.2",
     "mysql2": "^1.6.4",

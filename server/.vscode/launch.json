@@ -7,9 +7,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch GraphQL API",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/src/index.ts"]
+      "args": ["${workspaceFolder}/src/launch-graphql-api.ts"]
     }
   ]
 }

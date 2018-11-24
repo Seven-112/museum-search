@@ -34,8 +34,8 @@ module.exports = {
       phoneNumber: row["Phone Number"],
       latitude: row["Latitude"],
       longitude: row["Longitude"],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date(Date.now()),
+      updatedAt: new Date(Date.now())
     }));
 
     return queryInterface.bulkInsert("Museums", museums);

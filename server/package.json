@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "migrate": "sequelize db:migrate",
     "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js",
     "index": "ts-node ./src/build-elasticsearch-index.ts",
@@ -25,9 +25,13 @@
   "devDependencies": {
     "@types/elasticsearch": "^5.0.28",
     "@types/graphql": "^14.0.3",
+    "@types/jest": "^23.3.9",
     "@types/node": "^10.12.5",
     "@types/sequelize": "^4.27.30",
     "@types/xlsx": "0.0.36",
-    "sequelize-cli": "^5.3.0"
+    "apollo-server-testing": "^2.2.2",
+    "jest": "^23.6.0",
+    "sequelize-cli": "^5.3.0",
+    "ts-jest": "^23.10.5"
   }
 }

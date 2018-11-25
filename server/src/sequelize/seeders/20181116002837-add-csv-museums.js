@@ -12,10 +12,11 @@ module.exports = {
    */
   up: (queryInterface) => {
 
-    // Make sure that the MUSEUMS_CSV file is provided.
+    // Check if the MUSEUMS_CSV file is provided.
     const csvPath = process.env.MUSEUMS_CSV;
     if (!csvPath) {
-      throw new Error("process.env.MUSEUMS_CSV must be set");
+      console.log("No csv provided: Skipping csv import");
+      return Promise.resolve();
     }
 
     const workBook = xlsx.readFile(path.resolve(csvPath));

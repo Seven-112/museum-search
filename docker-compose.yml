@@ -1,0 +1,44 @@
+version: "3.6"
+services:
+  # GraphQL API app
+  museum-api:
+    build: ./server
+    image: poffm/museum-search-api:latest
+    environment:
+      - "DB_HOST=mysql"
+      - "ES_HOST=elasticsearch:9200"
+    ports:
+      - "4000:4000"
+  # Migrates the DB schema, imports the CSV data if specified, builds the elasticsearch index
+  museum-api-migrate:
+    build: ./server
+    image: poffm/museum-search-api:latest
+    environment:
+      - "DB_HOST=mysql"
+      - "ES_HOST=elasticsearch:9200"
+      - "MUSEUMS_CSV=${MUSEUMS_CSV}"
+    volumes:
+      - ./data:/data
+    command: npm run all-data-setup
+  # Relational Database
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=database_development
+    command: mysqld --max_allowed_packet=32M
+    ports:
+      - "3306:3306"
+  # Search engine
+  elasticsearch:
+    image: elasticsearch:6.4.2
+    environment:
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  # UI for Elasticsearch
+  kibana:
+    image: kibana:6.4.2
+    ports:
+      - "5601:5601"

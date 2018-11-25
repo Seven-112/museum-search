@@ -35,9 +35,7 @@ describe("add-csv-museums seed", () => {
 
   it("does not insert museums from the csv file when process.env.MUSEUMS_CSV is not set", () => {
     delete process.env.MUSEUMS_CSV;
-    expect(() => {
-      seeder.up();
-    }).toThrowError("process.env.MUSEUMS_CSV must be set");
+    expect(seeder.up()).resolves.toEqual(undefined);
   });
 
   it("deletes all rows from the Museums table", () => {

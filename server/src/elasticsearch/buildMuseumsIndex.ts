@@ -1,12 +1,10 @@
 import { Client } from "elasticsearch";
-import { db } from "./sequelize/models";
-
-require('dotenv').config();
+import { db } from "../sequelize/models";
 
 /**
  * Builds the elasticsearch museums index.
  */
-const buildMuseumsIndex = async () => {
+export async function buildMuseumsIndex() {
   const esClient = new Client({
     host: process.env.ES_HOST
   });
@@ -58,10 +56,3 @@ const buildMuseumsIndex = async () => {
   });
   console.log("Museum data indexed.");
 };
-
-const onFinish = (input: any) => {
-  console.log(input);
-  process.exit();
-};
-
-buildMuseumsIndex().then(onFinish, onFinish);

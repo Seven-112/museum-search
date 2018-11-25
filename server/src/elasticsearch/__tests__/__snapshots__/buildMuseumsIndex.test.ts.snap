@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build-elasticsearch-index builds the elasticsearch index: bulk operation 1`] = `
+Object {
+  "body": Array [
+    Object {
+      "index": Object {
+        "_id": 1,
+        "_index": "museums",
+        "_type": "museum",
+      },
+    },
+    Object {
+      "id": 1,
+      "latitude": 10,
+      "location": Object {
+        "lat": 10,
+        "lon": 3,
+      },
+      "longitude": 3,
+      "name": "test museum 1",
+    },
+    Object {
+      "index": Object {
+        "_id": 2,
+        "_index": "museums",
+        "_type": "museum",
+      },
+    },
+    Object {
+      "id": 2,
+      "location": Object {
+        "lat": undefined,
+        "lon": undefined,
+      },
+      "name": "test museum 2",
+    },
+  ],
+}
+`;

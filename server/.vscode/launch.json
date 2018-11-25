@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch GraphQL API",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/src/launch-graphql-api.ts"]
+      "args": ["${workspaceFolder}/src/scripts/launch-graphql-api.ts"]
     }
   ]
 }

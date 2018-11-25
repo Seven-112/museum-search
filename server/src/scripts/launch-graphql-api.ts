@@ -1,6 +1,6 @@
-import { server } from "./graphql-api/server";
-
 require('dotenv').config();
+
+import { server } from "../graphql-api/server";
 
 // Start server.
 server.listen().then(({ url }) => {

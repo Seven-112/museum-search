@@ -1,0 +1,27 @@
+version: "3.6"
+services:
+  museum-api:
+    image: poffm/museum-search-api:latest
+    environment:
+      - "DB_HOST=mysql"
+      - "ES_HOST=elasticsearch:9200"
+    ports:
+      - "4000:4000"
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=database_development
+    ports:
+      - "3306:3306"
+  elasticsearch:
+    image: elasticsearch:6.4.2
+    environment:
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  kibana:
+    image: kibana:6.4.2
+    ports:
+      - "5601:5601"

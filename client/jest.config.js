@@ -7,6 +7,5 @@ module.exports = {
     "^.+\\.tsx?$": "babel-jest"
   },
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
-  collectCoverage: true
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"]
 };

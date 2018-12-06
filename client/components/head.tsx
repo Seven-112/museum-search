@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import NextHead from "next/head";
 
 const defaultDescription = "";

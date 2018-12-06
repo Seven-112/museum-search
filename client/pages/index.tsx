@@ -7,7 +7,7 @@ import { MuseumList } from "../components/search/MuseumList";
 
 const GET_MUSEUMS = gql`
   query($query: String! = "museum") {
-    museums(query: $query, first: 500) {
+    museums(query: $query, first: 200) {
       edges {
         node {
           id
@@ -18,7 +18,6 @@ const GET_MUSEUMS = gql`
           latitude
           longitude
         }
-        cursor
       }
       count
     }
@@ -30,19 +29,18 @@ export default class MuseumSearch extends React.Component {
     return (
       <div className="container-fluid">
         <Head title="Museum search" />
-        <h1>Museum Search</h1>
         <Query query={GET_MUSEUMS}>
           {({ loading, error, data, refetch }) => (
-            <div>
+            <div className="card col-md-3">
+              <h1>Museum Search</h1>
               <Formik
                 initialValues={{ query: "" }}
                 onSubmit={values => refetch(values)}
               >
                 <Form>
                   <Field
-                    className="form-control"
+                    className="form-control form-group"
                     autoComplete="off"
-                    style={{ width: 460 }}
                     name="query"
                   />
                 </Form>

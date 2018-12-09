@@ -29,10 +29,39 @@ export const resolvers: IResolvers<{}, {}> = {
       };
     },
     async museumMapObjects(source, args) {
+      const { query, boundingBox } = args;
+
       const { aggregations } = await esClient.search({
         index: "museums",
         size: 0,
         body: {
+          query: {
+            bool: {
+              must: query
+                ? {
+                    multi_match: {
+                      query
+                    }
+                  }
+                : undefined,
+              filter: boundingBox
+                ? {
+                    geo_bounding_box: {
+                      location: {
+                        top_left: [
+                          boundingBox.topLeft.longitude,
+                          boundingBox.topLeft.latitude
+                        ],
+                        bottom_right: [
+                          boundingBox.bottomRight.longitude,
+                          boundingBox.bottomRight.latitude
+                        ]
+                      }
+                    }
+                  }
+                : undefined
+            }
+          },
           aggregations: {
             museumsGrid: {
               geohash_grid: {

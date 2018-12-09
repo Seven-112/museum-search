@@ -6,7 +6,7 @@ import { gql } from "apollo-server";
 export const typeDefs = gql`
   type Query {
     museums(query: String, first: Int): MuseumSearchConnection
-    museumMapObjects(query: String): MuseumMapObjectsConnection
+    museumMapObjects(query: String, boundingBox: GeoBoundingBoxInput): MuseumMapObjectsConnection
   }
 
   type Museum {
@@ -33,6 +33,16 @@ export const typeDefs = gql`
   type MuseumSearchConnection {
     edges: [MuseumSearchEdge]
     count: Int
+  }
+
+  input GeoPointInput {
+    latitude: Float!
+    longitude: Float!
+  }
+
+  input GeoBoundingBoxInput {
+    topLeft: GeoPointInput!
+    bottomRight: GeoPointInput!
   }
 
   type GeoPointBucket {

@@ -1,5 +1,6 @@
 import { Client } from "elasticsearch";
 import { IResolvers } from "graphql-tools";
+import { bounds } from "latlon-geohash";
 
 const esClient = new Client({
   host: process.env.ES_HOST
@@ -73,10 +74,58 @@ export const resolvers: IResolvers<{}, {}> = {
         }
       });
 
-      return {
-        edges: aggregations.museumsGrid.buckets.map((bucket: any) => ({
-          node: { geoHashKey: bucket.key, count: bucket.doc_count }
+      const buckets: any[] = aggregations.museumsGrid.buckets;
+
+      const boundingBoxesWithFewMuseums = buckets
+        .filter(bucket => bucket.doc_count <= 5)
+        .map(bucket => bucket.key)
+        .map(bounds)
+        .map(bounds => ({
+          top_left: {
+            lat: bounds.ne.lat,
+            lon: bounds.sw.lon
+          },
+          bottom_right: {
+            lat: bounds.sw.lat,
+            lon: bounds.ne.lon
+          }
+        }));
+
+      const museumHits = (await esClient.search({
+        index: "museums",
+        size: 5000,
+        body: {
+          query: {
+            bool: {
+              should: boundingBoxesWithFewMuseums.map(box => ({
+                bool: {
+                  filter: {
+                    geo_bounding_box: {
+                      location: box
+                    }
+                  }
+                }
+              })),
+              minimum_should_match: 1
+            }
+          }
+        }
+      })).hits.hits;
+
+      const edges = [
+        ...buckets
+          .filter((bucket: any) => bucket.doc_count > 5)
+          .map((bucket: any) => ({
+            node: { geoHashKey: bucket.key, count: bucket.doc_count }
+          })),
+        ...museumHits.map(hit => ({
+          node: hit._source,
+          cursor: hit._id
         }))
+      ];
+
+      return {
+        edges
       };
     }
   },

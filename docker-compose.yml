@@ -1,5 +1,11 @@
 version: "3.6"
 services:
+  # Front-end web browser app
+  museum-client:
+    build: ./client
+    image: poffm/museum-search-client:latest
+    ports:
+      - "3000:3000"
   # GraphQL API app
   museum-api:
     build: ./server
@@ -9,6 +15,13 @@ services:
       - "ES_HOST=elasticsearch:9200"
     ports:
       - "4000:4000"
+  # Proxy to serve the client and api from the same host.
+  proxy:
+    image: nginx:1.15.7
+    volumes:
+      - "./proxy/:/etc/nginx/conf.d/"
+    ports:
+      - "80:80"
   # Migrates the DB schema, imports the CSV data if specified, builds the elasticsearch index
   museum-api-migrate:
     build: ./server

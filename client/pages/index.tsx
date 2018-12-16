@@ -1,60 +1,50 @@
 import { Field, Form, Formik } from "formik";
-import gql from "graphql-tag";
 import React from "react";
-import { Query } from "react-apollo";
 import Head from "../components/head";
 import { MuseumList } from "../components/search/MuseumList";
-
-const GET_MUSEUMS = gql`
-  query($query: String! = "museum") {
-    museums(query: $query, first: 200) {
-      edges {
-        node {
-          id
-          name
-          streetAddress
-          city
-          state
-          latitude
-          longitude
-        }
-      }
-      count
-    }
-  }
-`;
+import { MuseumListQuery } from "../components/search/MuseumListQuery";
+import { MuseumMap } from "../components/search/MuseumMap";
 
 export default class MuseumSearch extends React.Component {
   render() {
     return (
       <div className="container-fluid">
-        <Head title="Museum search" />
-        <Query query={GET_MUSEUMS}>
+        <Head title="Museum Search" />
+        <MuseumListQuery>
           {({ loading, error, data, refetch }) => (
-            <div className="card col-md-3">
-              <h1>Museum Search</h1>
-              <Formik
-                initialValues={{ query: "" }}
-                onSubmit={values => refetch(values)}
-              >
-                <Form>
-                  <Field
-                    className="form-control form-group"
-                    autoComplete="off"
-                    name="query"
-                  />
-                </Form>
-              </Formik>
-              {loading ? (
-                "Loading..."
-              ) : error ? (
-                <div className="alert alert-danger">{error.message}</div>
-              ) : (
-                <MuseumList museumConnection={data.museums || []} />
-              )}
+            <div>
+              <div className="row">
+                <h1 className="col-12">Museum Search</h1>
+              </div>
+              <div className="row">
+                <div className="col-md-3">
+                  <div className="card card-body">
+                    <Formik
+                      initialValues={{ query: "" }}
+                      onSubmit={values => refetch(values)}
+                    >
+                      <Form>
+                        <Field
+                          className="form-control form-group"
+                          autoComplete="off"
+                          name="query"
+                        />
+                      </Form>
+                    </Formik>
+                    <MuseumList
+                      loading={loading}
+                      error={error && error.message}
+                      museumConnection={data && data.museums}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-9">
+                  <MuseumMap />
+                </div>
+              </div>
             </div>
           )}
-        </Query>
+        </MuseumListQuery>
       </div>
     );
   }

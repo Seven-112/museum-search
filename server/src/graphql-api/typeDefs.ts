@@ -46,6 +46,8 @@ export const typeDefs = gql`
   }
 
   type GeoPointBucket {
+    latitude: Float
+    longitude: Float
     geoHashKey: String
     count: Int
   }

@@ -115,9 +115,20 @@ export const resolvers: IResolvers<{}, {}> = {
       const edges = [
         ...buckets
           .filter((bucket: any) => bucket.doc_count > 5)
-          .map((bucket: any) => ({
-            node: { geoHashKey: bucket.key, count: bucket.doc_count }
-          })),
+          .map((bucket: any) => {
+            const { ne, sw } = bounds(bucket.key);
+            const latitude = (ne.lat + sw.lat) / 2;
+            const longitude = (ne.lon + sw.lon) / 2;
+
+            return {
+              node: {
+                latitude,
+                longitude,
+                geoHashKey: bucket.key,
+                count: bucket.doc_count
+              }
+            };
+          }),
         ...museumHits.map(hit => ({
           node: hit._source,
           cursor: hit._id

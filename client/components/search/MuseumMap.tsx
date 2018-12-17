@@ -1,8 +1,10 @@
 import "leaflet/dist/leaflet.css";
 import React from "react";
-import { MapProps, TileLayerProps } from "react-leaflet";
+import { CircleMarkerProps, MapProps, TileLayerProps } from "react-leaflet";
 
-interface MuseumMapProps {}
+interface MuseumMapProps {
+  museumMapObjects?: any;
+}
 
 interface MuseumMapState {
   /**
@@ -13,6 +15,7 @@ interface MuseumMapState {
 
 let Map: React.ComponentClass<MapProps>;
 let TileLayer: React.ComponentClass<TileLayerProps>;
+let CircleMarker: React.ComponentClass<CircleMarkerProps>;
 
 export class MuseumMap extends React.Component<MuseumMapProps, MuseumMapState> {
   state = {
@@ -21,18 +24,32 @@ export class MuseumMap extends React.Component<MuseumMapProps, MuseumMapState> {
 
   async componentDidMount() {
     // Load the actual react-leaflet classes in this method, which is only called in the browser.
-    Map = require("react-leaflet").Map;
-    TileLayer = require("react-leaflet").TileLayer;
+    const reactLeaflet = require("react-leaflet");
+    Map = reactLeaflet.Map;
+    TileLayer = reactLeaflet.TileLayer;
+    CircleMarker = reactLeaflet.CircleMarker;
     this.setState({ showMap: true });
   }
 
   render() {
-    return Map ? (
-      <Map>
+    const { museumMapObjects } = this.props;
+
+    return this.state.showMap ? (
+      <Map center={[38.810338, -98.323266]} zoom={4} className="h-100">
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {museumMapObjects
+          ? museumMapObjects.edges.map(edge => (
+              <CircleMarker
+                key={`${edge.node.__typename}_${edge.node.id ||
+                  edge.node.geoHashKey}`}
+                center={[edge.node.latitude, edge.node.longitude]}
+                radius={2}
+              />
+            ))
+          : []}
       </Map>
     ) : null;
   }

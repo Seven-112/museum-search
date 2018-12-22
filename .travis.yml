@@ -10,4 +10,9 @@ before_script:
   - ./cc-test-reporter before-build
 script: npm run test:coverage
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  # Format server coverage
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.server.json server/coverage/lcov.info
+  # Sum coverage parts into coverage/codeclimate.json
+  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 1
+  # Upload coverage/codeclimate.json
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi

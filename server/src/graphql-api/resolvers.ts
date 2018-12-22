@@ -67,7 +67,7 @@ export const resolvers: IResolvers<{}, {}> = {
             museumsGrid: {
               geohash_grid: {
                 field: "location",
-                precision: "1000km"
+                precision: "3"
               }
             }
           }
@@ -97,6 +97,13 @@ export const resolvers: IResolvers<{}, {}> = {
         body: {
           query: {
             bool: {
+              must: query
+                ? {
+                    multi_match: {
+                      query
+                    }
+                  }
+                : undefined,
               should: boundingBoxesWithFewMuseums.map(box => ({
                 bool: {
                   filter: {

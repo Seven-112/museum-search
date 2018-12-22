@@ -1,35 +1,12 @@
-import { Client } from "elasticsearch";
 import { IResolvers } from "graphql-tools";
+import { museums } from "./resolvers/museums";
 import { bounds } from "latlon-geohash";
+import { ResolverContext } from "./types";
 
-const esClient = new Client({
-  host: process.env.ES_HOST
-});
-
-export const resolvers: IResolvers<{}, {}> = {
+export const resolvers: IResolvers<{}, ResolverContext> = {
   Query: {
-    async museums(source, args) {
-      const { hits } = await esClient.search({
-        index: "museums",
-        size: args.first || 100,
-        body: {
-          query: {
-            multi_match: {
-              query: args.query
-            }
-          }
-        }
-      });
-
-      return {
-        edges: hits.hits.map(hit => ({
-          node: hit._source,
-          cursor: hit._id
-        })),
-        count: hits.total
-      };
-    },
-    async museumMapObjects(source, args) {
+    museums,
+    async museumMapObjects(source, args, { esClient }) {
       const { query, boundingBox } = args;
 
       const { aggregations } = await esClient.search({

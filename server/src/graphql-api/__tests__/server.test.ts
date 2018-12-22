@@ -1,7 +1,7 @@
 import { gql } from "apollo-server";
 import { createTestClient } from "apollo-server-testing";
 import { Client, SearchResponse, SearchParams } from "elasticsearch";
-import { server } from "../server";
+import { createServer } from "../createServer";
 
 const SPACE_MUSEUM_QUERY = gql`
   {
@@ -90,7 +90,7 @@ jest.mock("elasticsearch", () => ({
   }
 }));
 
-const { query } = createTestClient(server);
+const { query } = createTestClient(createServer({ esClient: new Client({}) }));
 
 describe("museums query", () => {
   it("returns a MuseumConnection", async () => {

@@ -1,15 +1,46 @@
 import { IFieldResolver } from "graphql-tools";
 import { ResolverContext } from "../types";
 import { bounds } from "latlon-geohash";
+import { Client } from "elasticsearch";
 
 export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
   source,
-  args,
+  { query, boundingBox },
   { esClient }
 ) => {
-  const { query, boundingBox } = args;
+  const geoPointBuckets: any[] = await getMuseumBuckets({
+    esClient,
+    query,
+    boundingBox
+  });
 
-  const { aggregations } = await esClient.search({
+  const boundingBoxesWithFewMuseums = getBoundingBoxesWithFewMuseums({
+    geoPointBuckets
+  });
+
+  const museumHits = await getMuseumHits({
+    esClient,
+    query,
+    boundingBoxesWithFewMuseums
+  });
+
+  const edges = getEdges({ geoPointBuckets, museumHits });
+
+  return {
+    edges
+  };
+};
+
+const getMuseumBuckets = async ({
+  esClient,
+  query,
+  boundingBox
+}: {
+  esClient: Client;
+  query?: string;
+  boundingBox?: any;
+}) =>
+  (await esClient.search({
     index: "museums",
     size: 0,
     body: {
@@ -49,11 +80,14 @@ export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
         }
       }
     }
-  });
+  })).aggregations.museumsGrid.buckets;
 
-  const buckets: any[] = aggregations.museumsGrid.buckets;
-
-  const boundingBoxesWithFewMuseums = buckets
+const getBoundingBoxesWithFewMuseums = ({
+  geoPointBuckets
+}: {
+  geoPointBuckets: any[];
+}) =>
+  geoPointBuckets
     .filter(bucket => bucket.doc_count <= 5)
     .map(bucket => bucket.key)
     .map(bounds)
@@ -68,7 +102,16 @@ export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
       }
     }));
 
-  const museumHits = (await esClient.search({
+const getMuseumHits = async ({
+  esClient,
+  query,
+  boundingBoxesWithFewMuseums
+}: {
+  esClient: Client;
+  query?: string;
+  boundingBoxesWithFewMuseums: any[];
+}) =>
+  (await esClient.search({
     index: "museums",
     size: 5000,
     body: {
@@ -96,30 +139,31 @@ export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
     }
   })).hits.hits;
 
-  const edges = [
-    ...buckets
-      .filter((bucket: any) => bucket.doc_count > 5)
-      .map((bucket: any) => {
-        const { ne, sw } = bounds(bucket.key);
-        const latitude = (ne.lat + sw.lat) / 2;
-        const longitude = (ne.lon + sw.lon) / 2;
+const getEdges = ({
+  geoPointBuckets,
+  museumHits
+}: {
+  geoPointBuckets: any[];
+  museumHits: any[];
+}) => [
+  ...geoPointBuckets
+    .filter((bucket: any) => bucket.doc_count > 5)
+    .map((bucket: any) => {
+      const { ne, sw } = bounds(bucket.key);
+      const latitude = (ne.lat + sw.lat) / 2;
+      const longitude = (ne.lon + sw.lon) / 2;
 
-        return {
-          node: {
-            latitude,
-            longitude,
-            geoHashKey: bucket.key,
-            count: bucket.doc_count
-          }
-        };
-      }),
-    ...museumHits.map(hit => ({
-      node: hit._source,
-      cursor: hit._id
-    }))
-  ];
-
-  return {
-    edges
-  };
-};
+      return {
+        node: {
+          latitude,
+          longitude,
+          geoHashKey: bucket.key,
+          count: bucket.doc_count
+        }
+      };
+    }),
+  ...museumHits.map(hit => ({
+    node: hit._source,
+    cursor: hit._id
+  }))
+];

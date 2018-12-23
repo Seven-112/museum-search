@@ -4,7 +4,7 @@ import { bounds } from "latlon-geohash";
 import { Client } from "elasticsearch";
 
 export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
-  source,
+  _,
   { query, boundingBox },
   { esClient }
 ) => {
@@ -75,12 +75,43 @@ const getMuseumBuckets = async ({
         museumsGrid: {
           geohash_grid: {
             field: "location",
-            precision: "3"
+            precision: getPrecision({ boundingBox })
+          },
+          aggregations: {
+            avgLatitude: {
+              avg: {
+                field: "latitude"
+              }
+            },
+            avgLongitude: {
+              avg: {
+                field: "longitude"
+              }
+            }
           }
         }
       }
     }
   })).aggregations.museumsGrid.buckets;
+
+/**
+ * Decides the geohash precision based on the size of the client's map.
+ */
+const getPrecision = ({ boundingBox }: { boundingBox?: any }) => {
+  const defaultPrecision = 3;
+
+  if (!boundingBox) {
+    return defaultPrecision;
+  }
+
+  const latDistance =
+    boundingBox.topLeft.latitude - boundingBox.bottomRight.latitude;
+
+  if (latDistance <= 10) {
+    return 4;
+  }
+  return defaultPrecision;
+};
 
 const getBoundingBoxesWithFewMuseums = ({
   geoPointBuckets
@@ -148,20 +179,14 @@ const getEdges = ({
 }) => [
   ...geoPointBuckets
     .filter((bucket: any) => bucket.doc_count > 5)
-    .map((bucket: any) => {
-      const { ne, sw } = bounds(bucket.key);
-      const latitude = (ne.lat + sw.lat) / 2;
-      const longitude = (ne.lon + sw.lon) / 2;
-
-      return {
-        node: {
-          latitude,
-          longitude,
-          geoHashKey: bucket.key,
-          count: bucket.doc_count
-        }
-      };
-    }),
+    .map((bucket: any) => ({
+      node: {
+        latitude: bucket.avgLatitude.value,
+        longitude: bucket.avgLongitude.value,
+        geoHashKey: bucket.key,
+        count: bucket.doc_count
+      }
+    })),
   ...museumHits.map(hit => ({
     node: hit._source,
     cursor: hit._id

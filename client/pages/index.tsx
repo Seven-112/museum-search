@@ -5,6 +5,7 @@ import { MuseumList } from "../components/search/MuseumList";
 import { MuseumListQuery } from "../components/search/MuseumListQuery";
 import { MuseumMap } from "../components/search/MuseumMap";
 import { MuseumMapQuery } from "../components/search/MuseumMapQuery";
+import { debounce } from "lodash";
 
 /**
  * Makes this page non-vertically-scrollable.
@@ -20,6 +21,25 @@ const MUSEUMSEARCH_PAGE_CSS = `
     height: 100%;
   }
 `;
+
+const onMapMove = ({ refetch, variables }) =>
+  debounce(
+    box =>
+      refetch({
+        ...variables,
+        boundingBox: {
+          topLeft: {
+            latitude: box.getNorth(),
+            longitude: box.getWest()
+          },
+          bottomRight: {
+            latitude: box.getSouth(),
+            longitude: box.getEast()
+          }
+        }
+      }),
+    200
+  );
 
 export default class MuseumSearch extends React.Component {
   render() {
@@ -58,8 +78,9 @@ export default class MuseumSearch extends React.Component {
               </div>
               <div className="col-md-9">
                 <MuseumMapQuery variables={{ query: variables.query }}>
-                  {({ data }) => (
+                  {({ data, refetch }) => (
                     <MuseumMap
+                      onMove={onMapMove({ refetch, variables })}
                       museumMapObjects={data && data.museumMapObjects}
                     />
                   )}

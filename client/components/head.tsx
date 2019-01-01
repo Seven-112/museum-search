@@ -1,5 +1,7 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "leaflet/dist/leaflet.css";
 import NextHead from "next/head";
+import "../style/cluster.css";
 
 const defaultDescription = "";
 const defaultOGURL = "";

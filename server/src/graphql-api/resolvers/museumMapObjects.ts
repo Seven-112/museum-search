@@ -75,7 +75,7 @@ const getMuseumBuckets = async ({
         museumsGrid: {
           geohash_grid: {
             field: "location",
-            precision: getPrecision({ boundingBox })
+            precision: getGeoHashPrecision({ boundingBox })
           },
           aggregations: {
             avgLatitude: {
@@ -97,7 +97,7 @@ const getMuseumBuckets = async ({
 /**
  * Decides the geohash precision based on the size of the client's map.
  */
-const getPrecision = ({ boundingBox }: { boundingBox?: any }) => {
+export const getGeoHashPrecision = ({ boundingBox }: { boundingBox?: any }) => {
   const defaultPrecision = 3;
 
   if (!boundingBox) {

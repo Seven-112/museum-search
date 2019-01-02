@@ -144,14 +144,22 @@ jest.mock("elasticsearch", () => ({
 
 const { query } = createTestClient(createServer({ esClient: new Client({}) }));
 
-describe("museumMapObjects resolver", () => {
-  it("returns a MuseumMapObjectsConnection when no query string or bounding box is provided", async () => {
-    // Spy on the Elasticsearch client's "search" method.
-    const search = jest.spyOn(
-      require("elasticsearch").Client.prototype,
-      "search"
-    );
+// Spy on the Elasticsearch client's "search" method.
+const search = jest.spyOn(require("elasticsearch").Client.prototype, "search");
 
+// Spy on the museumMapObjects resolver's "getPrecision" method.
+const getGeoHashPrecision = jest.spyOn(
+  require("../museumMapObjects"),
+  "getGeoHashPrecision"
+);
+
+describe("museumMapObjects resolver", () => {
+  beforeEach(() => {
+    search.mockClear();
+    getGeoHashPrecision.mockClear();
+  });
+
+  it("returns a MuseumMapObjectsConnection when no query string or bounding box is provided", async () => {
     // Do the query.
     const response = await query({ query: MUSEUM_MAP_OBJECT_QUERY });
 
@@ -163,5 +171,80 @@ describe("museumMapObjects resolver", () => {
 
     // Check that the GraphQL response is correct.
     expect(response).toMatchSnapshot("museumMapObjects with no args response.");
+  });
+
+  it("returns a MuseumMapObjectsConnection when a query string and bounding box are provided", async () => {
+    // Do the query.
+    const response = await query({
+      query: MUSEUM_MAP_OBJECT_QUERY,
+      variables: {
+        query: "museum",
+        boundingBox: {
+          topLeft: {
+            latitude: 65.14611484756375,
+            longitude: -150.20489340321566
+          },
+          bottomRight: {
+            latitude: -0.7031073524364783,
+            longitude: -45.61504965321564
+          }
+        }
+      }
+    } as any);
+
+    // Check that the client search method was called twice with the correct args.
+    expect(search).toBeCalledTimes(2);
+    const [bucketsCall, museumsCall] = search.mock.calls;
+    expect(bucketsCall).toMatchSnapshot(
+      "Buckets search with query string and bounding box args."
+    );
+    expect(museumsCall).toMatchSnapshot(
+      "Museums search with query string and bounding box args."
+    );
+
+    // Check that the GraphQL response is correct.
+    expect(response).toMatchSnapshot(
+      "museumMapObjects with query string and bounding box args response."
+    );
+  });
+
+  it("aggregates at a higher geohash precision when the bounding box is smaller.", async () => {
+    // Latitude range over 10 should use precision 3.
+    await query({
+      query: MUSEUM_MAP_OBJECT_QUERY,
+      variables: {
+        query: "museum",
+        boundingBox: {
+          topLeft: {
+            latitude: 65.14611484756375,
+            longitude: -150.20489340321566
+          },
+          bottomRight: {
+            latitude: -0.7031073524364783,
+            longitude: -45.61504965321564
+          }
+        }
+      }
+    } as any);
+    expect(getGeoHashPrecision).lastReturnedWith(3);
+
+    // Latitude range under 10 should use precision 4.
+    await query({
+      query: MUSEUM_MAP_OBJECT_QUERY,
+      variables: {
+        query: "museum",
+        boundingBox: {
+          topLeft: {
+            latitude: 42.593532625649935,
+            longitude: -101.77734375000001
+          },
+          bottomRight: {
+            latitude: 33.18353672893615,
+            longitude: -87.18750000000001
+          }
+        }
+      }
+    } as any);
+    expect(getGeoHashPrecision).lastReturnedWith(4);
   });
 });

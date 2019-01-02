@@ -1,7 +1,7 @@
 import { gql } from "apollo-server";
 import { createTestClient } from "apollo-server-testing";
 import { Client, SearchResponse, SearchParams } from "elasticsearch";
-import { createServer } from "../createServer";
+import { createServer } from "../../createServer";
 
 const SPACE_MUSEUM_QUERY = gql`
   {

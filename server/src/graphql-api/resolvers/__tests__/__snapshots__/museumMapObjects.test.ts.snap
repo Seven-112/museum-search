@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`museumMapObjects resolver returns a MuseumMapObjectsConnection when no query string or bounding box is provided: Buckets search with no arguments. 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "aggregations": Object {
+        "museumsGrid": Object {
+          "aggregations": Object {
+            "avgLatitude": Object {
+              "avg": Object {
+                "field": "latitude",
+              },
+            },
+            "avgLongitude": Object {
+              "avg": Object {
+                "field": "longitude",
+              },
+            },
+          },
+          "geohash_grid": Object {
+            "field": "location",
+            "precision": 3,
+          },
+        },
+      },
+      "query": Object {
+        "bool": Object {
+          "filter": undefined,
+          "must": undefined,
+        },
+      },
+    },
+    "index": "museums",
+    "size": 0,
+  },
+]
+`;
+
+exports[`museumMapObjects resolver returns a MuseumMapObjectsConnection when no query string or bounding box is provided: Museums search with no arguments. 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "query": Object {
+        "bool": Object {
+          "minimum_should_match": 1,
+          "must": undefined,
+          "should": Array [
+            Object {
+              "bool": Object {
+                "filter": Object {
+                  "geo_bounding_box": Object {
+                    "location": Object {
+                      "bottom_right": Object {
+                        "lat": 39.375,
+                        "lon": -73.125,
+                      },
+                      "top_left": Object {
+                        "lat": 40.78125,
+                        "lon": -74.53125,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "index": "museums",
+    "size": 5000,
+  },
+]
+`;
+
+exports[`museumMapObjects resolver returns a MuseumMapObjectsConnection when no query string or bounding box is provided: museumMapObjects with no args response. 1`] = `
+Object {
+  "data": Object {
+    "museumMapObjects": Object {
+      "edges": Array [
+        Object {
+          "node": Object {
+            "__typename": "GeoPointBucket",
+            "count": 931,
+            "geoHashKey": "dr4",
+            "latitude": 40.11064952682348,
+            "longitude": -75.22248325696181,
+          },
+        },
+        Object {
+          "node": Object {
+            "__typename": "GeoPointBucket",
+            "count": 788,
+            "geoHashKey": "dr7",
+            "latitude": 41.196299010727,
+            "longitude": -73.81607840872053,
+          },
+        },
+        Object {
+          "node": Object {
+            "__typename": "Museum",
+            "id": 5104,
+            "latitude": 40.70317,
+            "longitude": -74.00916,
+            "name": "OPERATION SAIL",
+          },
+        },
+        Object {
+          "node": Object {
+            "__typename": "Museum",
+            "id": 18747,
+            "latitude": 40.5535,
+            "longitude": -74.52932,
+            "name": "ABRAHAM STAATS HOUSE",
+          },
+        },
+      ],
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;

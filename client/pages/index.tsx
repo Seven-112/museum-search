@@ -1,11 +1,12 @@
 import { Field, Form, Formik } from "formik";
+import { debounce } from "lodash";
+import dynamic from "next/dynamic";
 import React from "react";
 import Head from "../components/head";
 import { MuseumList } from "../components/search/MuseumList";
 import { MuseumListQuery } from "../components/search/MuseumListQuery";
-import { MuseumMap } from "../components/search/MuseumMap";
+import { MuseumMapProps } from "../components/search/MuseumMap";
 import { MuseumMapQuery } from "../components/search/MuseumMapQuery";
-import { debounce } from "lodash";
 
 /**
  * Makes this page non-vertically-scrollable.
@@ -40,6 +41,12 @@ const onMapMove = ({ refetch, variables }) =>
       }),
     200
   );
+
+const MuseumMap = dynamic<MuseumMapProps>(
+  (async () =>
+    (await import("../components/search/MuseumMap")).MuseumMap) as any,
+  { ssr: false }
+);
 
 export default class MuseumSearch extends React.Component {
   render() {

@@ -127,15 +127,6 @@ Object {
             "name": "OPERATION SAIL",
           },
         },
-        Object {
-          "node": Object {
-            "__typename": "Museum",
-            "id": 18747,
-            "latitude": 40.5535,
-            "longitude": -74.52932,
-            "name": "ABRAHAM STAATS HOUSE",
-          },
-        },
       ],
     },
   },
@@ -169,7 +160,7 @@ Array [
           },
           "geohash_grid": Object {
             "field": "location",
-            "precision": 3,
+            "precision": 2,
           },
         },
       },
@@ -253,15 +244,6 @@ Object {
             "latitude": 40.70317,
             "longitude": -74.00916,
             "name": "OPERATION SAIL",
-          },
-        },
-        Object {
-          "node": Object {
-            "__typename": "Museum",
-            "id": 18747,
-            "latitude": 40.5535,
-            "longitude": -74.52932,
-            "name": "ABRAHAM STAATS HOUSE",
           },
         },
       ],

@@ -56,7 +56,7 @@ const MUSEUM_BUCKETS_MOCK_RESPONSE = {
         },
         {
           key: "dr5",
-          doc_count: 2,
+          doc_count: 1,
           avgLongitude: {
             value: -74.01199078959803
           },
@@ -96,33 +96,6 @@ const MUSEUMS_MOCK_RESPONSE = {
           location: {
             lat: 40.70317,
             lon: -74.00916
-          }
-        }
-      },
-      {
-        _index: "museums",
-        _type: "museum",
-        _id: "18747",
-        _score: 0,
-        _source: {
-          id: 18747,
-          name: "ABRAHAM STAATS HOUSE",
-          legalName: "FRIENDS OF ABRAHAM STAATS HOUSE INC",
-          alternateName: null,
-          museumType: "HISTORY MUSEUM",
-          institutionName: null,
-          streetAddress: null,
-          city: null,
-          state: null,
-          zipCode: null,
-          phoneNumber: "7324695836",
-          latitude: 40.5535,
-          longitude: -74.52932,
-          createdAt: "2018-11-25T22:48:02.000Z",
-          updatedAt: "2018-11-25T22:48:02.000Z",
-          location: {
-            lat: 40.5535,
-            lon: -74.52932
           }
         }
       }

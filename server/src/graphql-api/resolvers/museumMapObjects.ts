@@ -98,7 +98,7 @@ const getMuseumBuckets = async ({
  * Decides the geohash precision based on the size of the client's map.
  */
 export const getGeoHashPrecision = ({ boundingBox }: { boundingBox?: any }) => {
-  const defaultPrecision = 3;
+  const defaultPrecision = 2;
 
   if (!boundingBox) {
     return defaultPrecision;
@@ -107,8 +107,23 @@ export const getGeoHashPrecision = ({ boundingBox }: { boundingBox?: any }) => {
   const latDistance =
     boundingBox.topLeft.latitude - boundingBox.bottomRight.latitude;
 
+  if (latDistance <= 0.1) {
+    return 12;
+  }
+  if (latDistance <= 0.2) {
+    return 7;
+  }
+  if (latDistance <= 0.5) {
+    return 6;
+  }
+  if (latDistance <= 2) {
+    return 5;
+  }
   if (latDistance <= 10) {
     return 4;
+  }
+  if (latDistance <= 80) {
+    return 3;
   }
   return defaultPrecision;
 };
@@ -119,7 +134,7 @@ const getBoundingBoxesWithFewMuseums = ({
   geoPointBuckets: any[];
 }) =>
   geoPointBuckets
-    .filter(bucket => bucket.doc_count <= 5)
+    .filter(bucket => bucket.doc_count <= 1)
     .map(bucket => bucket.key)
     .map(bounds)
     .map(bounds => ({
@@ -141,8 +156,12 @@ const getMuseumHits = async ({
   esClient: Client;
   query?: string;
   boundingBoxesWithFewMuseums: any[];
-}) =>
-  (await esClient.search({
+}) => {
+  if (!boundingBoxesWithFewMuseums.length) {
+    return [];
+  }
+
+  return (await esClient.search({
     index: "museums",
     size: 5000,
     body: {
@@ -169,6 +188,7 @@ const getMuseumHits = async ({
       }
     }
   })).hits.hits;
+};
 
 const getEdges = ({
   geoPointBuckets,
@@ -178,7 +198,7 @@ const getEdges = ({
   museumHits: any[];
 }) => [
   ...geoPointBuckets
-    .filter((bucket: any) => bucket.doc_count > 5)
+    .filter((bucket: any) => bucket.doc_count > 1)
     .map((bucket: any) => ({
       node: {
         latitude: bucket.avgLatitude.value,

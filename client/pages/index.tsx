@@ -1,12 +1,18 @@
 import { Field, Form, Formik } from "formik";
 import { debounce } from "lodash";
 import dynamic from "next/dynamic";
+import { withRouter, WithRouterProps } from "next/router";
 import React from "react";
 import Head from "../components/head";
 import { MuseumList } from "../components/search/MuseumList";
 import { MuseumListQuery } from "../components/search/MuseumListQuery";
-import { MuseumMapProps } from "../components/search/MuseumMap";
+import { MoveHandler, MuseumMapProps } from "../components/search/MuseumMap";
 import { MuseumMapQuery } from "../components/search/MuseumMapQuery";
+
+interface MuseumSearchPageQuery {
+  q?: string;
+  within?: string;
+}
 
 /**
  * Makes this page non-vertically-scrollable.
@@ -23,33 +29,45 @@ const MUSEUMSEARCH_PAGE_CSS = `
   }
 `;
 
-const onMapMove = ({ refetch, variables }) =>
-  debounce(
-    box =>
-      refetch({
-        ...variables,
-        boundingBox: {
-          topLeft: {
-            latitude: box.getNorth(),
-            longitude: box.getWest()
-          },
-          bottomRight: {
-            latitude: box.getSouth(),
-            longitude: box.getEast()
-          }
-        }
-      }),
-    200
-  );
-
 const MuseumMap = dynamic<MuseumMapProps>(
   (async () =>
     (await import("../components/search/MuseumMap")).MuseumMap) as any,
   { ssr: false }
 );
 
-export default class MuseumSearch extends React.Component {
+class MuseumSearchPage extends React.Component<
+  WithRouterProps<MuseumSearchPageQuery>
+> {
+  search({ q, within }: MuseumSearchPageQuery) {
+    const { router } = this.props;
+
+    router.push({
+      pathname: "/index",
+      query: {
+        q: q || router.query.q,
+        within: within || router.query.within
+      }
+    });
+  }
+
+  onMapMove = debounce<MoveHandler>(box => {
+    this.search({
+      within: JSON.stringify({
+        topLeft: {
+          latitude: box.getNorth(),
+          longitude: box.getWest()
+        },
+        bottomRight: {
+          latitude: box.getSouth(),
+          longitude: box.getEast()
+        }
+      })
+    });
+  }, 200);
+
   render() {
+    const { router } = this.props;
+
     return (
       <div className="container-fluid d-flex flex-column flex-fill">
         <style>{MUSEUMSEARCH_PAGE_CSS}</style>
@@ -57,14 +75,14 @@ export default class MuseumSearch extends React.Component {
         <div className="row flex-shrink-0">
           <h1 className="col-12">Museum Search</h1>
         </div>
-        <MuseumListQuery>
-          {({ loading, error, data, refetch, variables }) => (
+        <MuseumListQuery variables={{ query: router.query.q || "museums" }}>
+          {({ loading, error, data }) => (
             <div className="row flex-fill">
               <div className="col-md-3">
                 <div className="card card-body h-100">
                   <Formik
-                    initialValues={{ query: "" }}
-                    onSubmit={values => refetch(values)}
+                    initialValues={{ query: router.query.q }}
+                    onSubmit={values => this.search({ q: values.query })}
                   >
                     <Form>
                       <Field
@@ -84,10 +102,16 @@ export default class MuseumSearch extends React.Component {
                 </div>
               </div>
               <div className="col-md-9">
-                <MuseumMapQuery variables={{ query: variables.query }}>
-                  {({ data, refetch }) => (
+                <MuseumMapQuery
+                  variables={{
+                    query: router.query.q || "",
+                    boundingBox:
+                      JSON.parse(router.query.within || null) || undefined
+                  }}
+                >
+                  {({ data }) => (
                     <MuseumMap
-                      onMove={onMapMove({ refetch, variables })}
+                      onMove={this.onMapMove}
                       museumMapObjects={data && data.museumMapObjects}
                     />
                   )}
@@ -100,3 +124,5 @@ export default class MuseumSearch extends React.Component {
     );
   }
 }
+
+export default withRouter(MuseumSearchPage);

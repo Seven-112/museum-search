@@ -2,6 +2,7 @@ import { gql } from "apollo-server";
 import { createTestClient } from "apollo-server-testing";
 import { Client, SearchParams } from "elasticsearch";
 import { createServer } from "../../createServer";
+import { isEqual } from "lodash";
 
 const MUSEUM_MAP_OBJECT_QUERY = gql`
   query museumMapObjects($query: String, $boundingBox: GeoBoundingBoxInput) {
@@ -30,7 +31,7 @@ const MUSEUM_MAP_OBJECT_QUERY = gql`
   }
 `;
 
-const MUSEUM_BUCKETS_MOCK_RESPONSE = {
+const MOCK_MUSEUM_BUCKETS_RESPONSE = {
   aggregations: {
     museumsGrid: {
       buckets: [
@@ -69,7 +70,7 @@ const MUSEUM_BUCKETS_MOCK_RESPONSE = {
   }
 };
 
-const MUSEUMS_MOCK_RESPONSE = {
+const MOCK_MUSEUMS_RESPONSE = {
   hits: {
     hits: [
       {
@@ -103,24 +104,23 @@ const MUSEUMS_MOCK_RESPONSE = {
   }
 };
 
+const mockSearch = jest.fn(async (params: SearchParams) => {
+  if (params.body.aggregations) {
+    return MOCK_MUSEUM_BUCKETS_RESPONSE;
+  } else {
+    return MOCK_MUSEUMS_RESPONSE;
+  }
+});
+
 jest.mock("elasticsearch", () => ({
   Client: class {
-    async search(params: SearchParams) {
-      if (params.body.aggregations) {
-        return MUSEUM_BUCKETS_MOCK_RESPONSE;
-      } else {
-        return MUSEUMS_MOCK_RESPONSE;
-      }
-    }
+    search = mockSearch;
   }
 }));
 
 const { query } = createTestClient(createServer({ esClient: new Client({}) }));
 
-// Spy on the Elasticsearch client's "search" method.
-const search = jest.spyOn(require("elasticsearch").Client.prototype, "search");
-
-// Spy on the museumMapObjects resolver's "getPrecision" method.
+// Spy on the museumMapObjects resolver's "getGeoHashPrecision" method.
 const getGeoHashPrecision = jest.spyOn(
   require("../museumMapObjects"),
   "getGeoHashPrecision"
@@ -128,7 +128,7 @@ const getGeoHashPrecision = jest.spyOn(
 
 describe("museumMapObjects resolver", () => {
   beforeEach(() => {
-    search.mockClear();
+    mockSearch.mockClear();
     getGeoHashPrecision.mockClear();
   });
 
@@ -137,8 +137,8 @@ describe("museumMapObjects resolver", () => {
     const response = await query({ query: MUSEUM_MAP_OBJECT_QUERY });
 
     // Check that the client search method was called twice with the correct args.
-    expect(search).toBeCalledTimes(2);
-    const [bucketsCall, museumsCall] = search.mock.calls;
+    expect(mockSearch).toBeCalledTimes(2);
+    const [bucketsCall, museumsCall] = mockSearch.mock.calls;
     expect(bucketsCall).toMatchSnapshot("Buckets search with no arguments.");
     expect(museumsCall).toMatchSnapshot("Museums search with no arguments.");
 
@@ -166,8 +166,8 @@ describe("museumMapObjects resolver", () => {
     } as any);
 
     // Check that the client search method was called twice with the correct args.
-    expect(search).toBeCalledTimes(2);
-    const [bucketsCall, museumsCall] = search.mock.calls;
+    expect(mockSearch).toBeCalledTimes(2);
+    const [bucketsCall, museumsCall] = mockSearch.mock.calls;
     expect(bucketsCall).toMatchSnapshot(
       "Buckets search with query string and bounding box args."
     );
@@ -182,42 +182,130 @@ describe("museumMapObjects resolver", () => {
   });
 
   it("aggregates at a higher geohash precision when the bounding box is smaller.", async () => {
-    // Latitude range over 10 should use precision 3.
-    await query({
-      query: MUSEUM_MAP_OBJECT_QUERY,
-      variables: {
-        query: "museum",
-        boundingBox: {
-          topLeft: {
-            latitude: 65.14611484756375,
-            longitude: -150.20489340321566
-          },
-          bottomRight: {
-            latitude: -0.7031073524364783,
-            longitude: -45.61504965321564
-          }
+    async function checkBoundingBoxQuery(boundingBox: any) {
+      await query({
+        query: MUSEUM_MAP_OBJECT_QUERY,
+        variables: {
+          query: "museum",
+          boundingBox
         }
+      } as any);
+    }
+    // Latitude range over 80 should use precision 2.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 67.47492238478702,
+        longitude: -178.06640625000003
+      },
+      bottomRight: {
+        latitude: -49.61070993807422,
+        longitude: 38.14453125000001
       }
-    } as any);
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(2);
+
+    // Latitude range over 60 should use precision 3.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 65.14611484756375,
+        longitude: -150.20489340321566
+      },
+      bottomRight: {
+        latitude: -0.7031073524364783,
+        longitude: -45.61504965321564
+      }
+    });
     expect(getGeoHashPrecision).lastReturnedWith(3);
 
-    // Latitude range under 10 should use precision 4.
-    await query({
-      query: MUSEUM_MAP_OBJECT_QUERY,
-      variables: {
-        query: "museum",
-        boundingBox: {
-          topLeft: {
-            latitude: 42.593532625649935,
-            longitude: -101.77734375000001
-          },
-          bottomRight: {
-            latitude: 33.18353672893615,
-            longitude: -87.18750000000001
-          }
-        }
+    // Latitude range 5-80 should use precision 3.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 42.17968819665963,
+        longitude: -102.16186523437501
+      },
+      bottomRight: {
+        latitude: 34.867904962568744,
+        longitude: -88.64868164062501
       }
-    } as any);
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(3);
+
+    // Latitude range 2-5 should use precision 4.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 40.58475654701271,
+        longitude: -98.32763671875001
+      },
+      bottomRight: {
+        latitude: 36.9367208722872,
+        longitude: -91.571044921875
+      }
+    });
     expect(getGeoHashPrecision).lastReturnedWith(4);
+
+    // Latitude range 2-5 should use precision 4.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 40.58475654701271,
+        longitude: -98.32763671875001
+      },
+      bottomRight: {
+        latitude: 36.9367208722872,
+        longitude: -91.571044921875
+      }
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(4);
+
+    // Latitude range 0.5-2 should use precision 5.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 39.926588421909436,
+        longitude: -96.33636474609376
+      },
+      bottomRight: {
+        latitude: 38.108627664321276,
+        longitude: -92.95806884765626
+      }
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(5);
+
+    // Latitude range 0.2-0.5 should use precision 6.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 38.77710492428489,
+        longitude: -90.75050354003908
+      },
+      bottomRight: {
+        latitude: 38.31957212925229,
+        longitude: -89.9059295654297
+      }
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(6);
+
+    // Latitude range 0.1-0.2 should use precision 7.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 38.643020136764996,
+        longitude: -90.468807220459
+      },
+      bottomRight: {
+        latitude: 38.528695999656605,
+        longitude: -90.25766372680665
+      }
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(7);
+
+    // Latitude range 0.1-0.2 should use precision 7.
+    await checkBoundingBoxQuery({
+      topLeft: {
+        latitude: 38.66185539919398,
+        longitude: -90.29800415039062
+      },
+      bottomRight: {
+        latitude: 38.604731093586445,
+        longitude: -90.2142333984375
+      }
+    });
+    expect(getGeoHashPrecision).lastReturnedWith(12);
   });
 });

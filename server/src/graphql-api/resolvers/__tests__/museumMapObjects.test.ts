@@ -153,14 +153,10 @@ describe("museumMapObjects resolver", () => {
       variables: {
         query: "museum",
         boundingBox: {
-          topLeft: {
-            latitude: 65.14611484756375,
-            longitude: -150.20489340321566
-          },
-          bottomRight: {
-            latitude: -0.7031073524364783,
-            longitude: -45.61504965321564
-          }
+          top: 65.14611484756375,
+          left: -150.20489340321566,
+          bottom: -0.7031073524364783,
+          right: -45.61504965321564
         }
       }
     } as any);
@@ -193,118 +189,82 @@ describe("museumMapObjects resolver", () => {
     }
     // Latitude range over 80 should use precision 2.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 67.47492238478702,
-        longitude: -178.06640625000003
-      },
-      bottomRight: {
-        latitude: -49.61070993807422,
-        longitude: 38.14453125000001
-      }
+      top: 67.47492238478702,
+      left: -178.06640625000003,
+      bottom: -49.61070993807422,
+      right: 38.14453125000001
     });
     expect(getGeoHashPrecision).lastReturnedWith(2);
 
     // Latitude range over 60 should use precision 3.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 65.14611484756375,
-        longitude: -150.20489340321566
-      },
-      bottomRight: {
-        latitude: -0.7031073524364783,
-        longitude: -45.61504965321564
-      }
+      top: 65.14611484756375,
+      left: -150.20489340321566,
+      bottom: -0.7031073524364783,
+      right: -45.61504965321564
     });
     expect(getGeoHashPrecision).lastReturnedWith(3);
 
     // Latitude range 5-80 should use precision 3.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 42.17968819665963,
-        longitude: -102.16186523437501
-      },
-      bottomRight: {
-        latitude: 34.867904962568744,
-        longitude: -88.64868164062501
-      }
+      top: 42.17968819665963,
+      left: -102.16186523437501,
+      bottom: 34.867904962568744,
+      right: -88.64868164062501
     });
     expect(getGeoHashPrecision).lastReturnedWith(3);
 
     // Latitude range 2-5 should use precision 4.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 40.58475654701271,
-        longitude: -98.32763671875001
-      },
-      bottomRight: {
-        latitude: 36.9367208722872,
-        longitude: -91.571044921875
-      }
+      top: 40.58475654701271,
+      left: -98.32763671875001,
+      bottom: 36.9367208722872,
+      right: -91.571044921875
     });
     expect(getGeoHashPrecision).lastReturnedWith(4);
 
     // Latitude range 2-5 should use precision 4.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 40.58475654701271,
-        longitude: -98.32763671875001
-      },
-      bottomRight: {
-        latitude: 36.9367208722872,
-        longitude: -91.571044921875
-      }
+      top: 40.58475654701271,
+      left: -98.32763671875001,
+      bottom: 36.9367208722872,
+      right: -91.571044921875
     });
     expect(getGeoHashPrecision).lastReturnedWith(4);
 
     // Latitude range 0.5-2 should use precision 5.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 39.926588421909436,
-        longitude: -96.33636474609376
-      },
-      bottomRight: {
-        latitude: 38.108627664321276,
-        longitude: -92.95806884765626
-      }
+      top: 39.926588421909436,
+      left: -96.33636474609376,
+      bottom: 38.108627664321276,
+      right: -92.95806884765626
     });
     expect(getGeoHashPrecision).lastReturnedWith(5);
 
     // Latitude range 0.2-0.5 should use precision 6.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 38.77710492428489,
-        longitude: -90.75050354003908
-      },
-      bottomRight: {
-        latitude: 38.31957212925229,
-        longitude: -89.9059295654297
-      }
+      top: 38.77710492428489,
+      left: -90.75050354003908,
+      bottom: 38.31957212925229,
+      right: -89.9059295654297
     });
     expect(getGeoHashPrecision).lastReturnedWith(6);
 
     // Latitude range 0.1-0.2 should use precision 7.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 38.643020136764996,
-        longitude: -90.468807220459
-      },
-      bottomRight: {
-        latitude: 38.528695999656605,
-        longitude: -90.25766372680665
-      }
+      top: 38.643020136764996,
+      left: -90.468807220459,
+      bottom: 38.528695999656605,
+      right: -90.25766372680665
     });
     expect(getGeoHashPrecision).lastReturnedWith(7);
 
     // Latitude range 0.1-0.2 should use precision 7.
     await checkBoundingBoxQuery({
-      topLeft: {
-        latitude: 38.66185539919398,
-        longitude: -90.29800415039062
-      },
-      bottomRight: {
-        latitude: 38.604731093586445,
-        longitude: -90.2142333984375
-      }
+      top: 38.66185539919398,
+      left: -90.29800415039062,
+      bottom: 38.604731093586445,
+      right: -90.2142333984375
     });
     expect(getGeoHashPrecision).lastReturnedWith(12);
   });

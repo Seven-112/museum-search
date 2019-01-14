@@ -29,14 +29,10 @@ Array [
           "filter": Object {
             "geo_bounding_box": Object {
               "location": Object {
-                "bottom_right": Array [
-                  -45.61504965321564,
-                  -0.7031073524364783,
-                ],
-                "top_left": Array [
-                  -150.20489340321566,
-                  65.14611484756375,
-                ],
+                "bottom": -0.7031073524364783,
+                "left": -150.20489340321566,
+                "right": -45.61504965321564,
+                "top": 65.14611484756375,
               },
             },
           },
@@ -72,14 +68,10 @@ Array [
                 "filter": Object {
                   "geo_bounding_box": Object {
                     "location": Object {
-                      "bottom_right": Object {
-                        "lat": 39.375,
-                        "lon": -73.125,
-                      },
-                      "top_left": Object {
-                        "lat": 40.78125,
-                        "lon": -74.53125,
-                      },
+                      "bottom": 39.375,
+                      "left": -74.53125,
+                      "right": -73.125,
+                      "top": 40.78125,
                     },
                   },
                 },
@@ -191,14 +183,10 @@ Array [
                 "filter": Object {
                   "geo_bounding_box": Object {
                     "location": Object {
-                      "bottom_right": Object {
-                        "lat": 39.375,
-                        "lon": -73.125,
-                      },
-                      "top_left": Object {
-                        "lat": 40.78125,
-                        "lon": -74.53125,
-                      },
+                      "bottom": 39.375,
+                      "left": -74.53125,
+                      "right": -73.125,
+                      "top": 40.78125,
                     },
                   },
                 },

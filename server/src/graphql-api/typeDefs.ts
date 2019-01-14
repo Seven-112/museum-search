@@ -35,14 +35,11 @@ export const typeDefs = gql`
     count: Int
   }
 
-  input GeoPointInput {
-    latitude: Float!
-    longitude: Float!
-  }
-
   input GeoBoundingBoxInput {
-    topLeft: GeoPointInput!
-    bottomRight: GeoPointInput!
+    top: Float!
+    left: Float!
+    bottom: Float!
+    right: Float!
   }
 
   type GeoPointBucket {

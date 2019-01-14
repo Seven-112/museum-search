@@ -62,16 +62,7 @@ async function getMuseumBuckets({
           filter: boundingBox
             ? {
                 geo_bounding_box: {
-                  location: {
-                    top_left: [
-                      boundingBox.topLeft.longitude,
-                      boundingBox.topLeft.latitude
-                    ],
-                    bottom_right: [
-                      boundingBox.bottomRight.longitude,
-                      boundingBox.bottomRight.latitude
-                    ]
-                  }
+                  location: boundingBox
                 }
               }
             : undefined
@@ -113,8 +104,7 @@ export const getGeoHashPrecision = ({ boundingBox }: { boundingBox?: any }) => {
     return defaultPrecision;
   }
 
-  const latDistance =
-    boundingBox.topLeft.latitude - boundingBox.bottomRight.latitude;
+  const latDistance = boundingBox.top - boundingBox.bottom;
 
   // Decide the precision arbitrarily based on the distance between the bounding box's top and
   // bottom latitude.
@@ -157,14 +147,10 @@ function getBoundingBoxesToUnpack({
     .map(bucket => bucket.key)
     .map(geohash => bounds(geohash))
     .map(({ ne, sw }) => ({
-      top_left: {
-        lat: ne.lat,
-        lon: sw.lon
-      },
-      bottom_right: {
-        lat: sw.lat,
-        lon: ne.lon
-      }
+      top: ne.lat,
+      left: sw.lon,
+      bottom: sw.lat,
+      right: ne.lon
     }));
 }
 

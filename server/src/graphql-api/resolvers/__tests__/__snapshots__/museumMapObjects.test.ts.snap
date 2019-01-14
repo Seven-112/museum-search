@@ -246,3 +246,66 @@ Object {
   },
 }
 `;
+
+exports[`museumMapObjects resolver returns a MuseumMapObjectsConnection with no edges when an empty bounding box is provided: Buckets search with empty bounding box. 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "aggregations": Object {
+        "museumsGrid": Object {
+          "aggregations": Object {
+            "avgLatitude": Object {
+              "avg": Object {
+                "field": "latitude",
+              },
+            },
+            "avgLongitude": Object {
+              "avg": Object {
+                "field": "longitude",
+              },
+            },
+          },
+          "geohash_grid": Object {
+            "field": "location",
+            "precision": 12,
+          },
+        },
+      },
+      "query": Object {
+        "bool": Object {
+          "filter": Object {
+            "geo_bounding_box": Object {
+              "location": Object {
+                "bottom": 38.907974370742046,
+                "left": -94.47119146585467,
+                "right": -94.46789234876636,
+                "top": 38.909752622714755,
+              },
+            },
+          },
+          "must": undefined,
+        },
+      },
+    },
+    "index": "museums",
+    "size": 0,
+  },
+]
+`;
+
+exports[`museumMapObjects resolver returns a MuseumMapObjectsConnection with no edges when an empty bounding box is provided: museumMapObjects with query string and bounding box args response. 1`] = `
+Object {
+  "data": Object {
+    "museumMapObjects": Object {
+      "edges": Array [],
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;

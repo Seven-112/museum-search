@@ -31,6 +31,14 @@ const MUSEUM_MAP_OBJECT_QUERY = gql`
   }
 `;
 
+/** Real-world example of a bounding box with no museums. */
+const EMPTY_BOUNDING_BOX = {
+  top: 38.909752622714755,
+  left: -94.47119146585467,
+  bottom: 38.907974370742046,
+  right: -94.46789234876636
+};
+
 const MOCK_MUSEUM_BUCKETS_RESPONSE = {
   aggregations: {
     museumsGrid: {
@@ -66,6 +74,14 @@ const MOCK_MUSEUM_BUCKETS_RESPONSE = {
           }
         }
       ]
+    }
+  }
+};
+
+const MOCK_EMPTY_MUSEUM_BUCKETS_RESPONSE = {
+  aggregations: {
+    museumsGrid: {
+      buckets: []
     }
   }
 };
@@ -106,6 +122,16 @@ const MOCK_MUSEUMS_RESPONSE = {
 
 const mockSearch = jest.fn(async (params: SearchParams) => {
   if (params.body.aggregations) {
+    if (
+      params.body.query.bool.filter &&
+      isEqual(
+        params.body.query.bool.filter.geo_bounding_box.location,
+        EMPTY_BOUNDING_BOX
+      )
+    ) {
+      console.log("empty returned");
+      return MOCK_EMPTY_MUSEUM_BUCKETS_RESPONSE;
+    }
     return MOCK_MUSEUM_BUCKETS_RESPONSE;
   } else {
     return MOCK_MUSEUMS_RESPONSE;
@@ -169,6 +195,28 @@ describe("museumMapObjects resolver", () => {
     );
     expect(museumsCall).toMatchSnapshot(
       "Museums search with query string and bounding box args."
+    );
+
+    // Check that the GraphQL response is correct.
+    expect(response).toMatchSnapshot(
+      "museumMapObjects with query string and bounding box args response."
+    );
+  });
+
+  it("returns a MuseumMapObjectsConnection with no edges when an empty bounding box is provided", async () => {
+    // Do the query.
+    const response = await query({
+      query: MUSEUM_MAP_OBJECT_QUERY,
+      variables: {
+        boundingBox: EMPTY_BOUNDING_BOX
+      }
+    } as any);
+
+    // Only one search should be performed because the first should return no results.
+    expect(mockSearch).toBeCalledTimes(1);
+    const [bucketsCall] = mockSearch.mock.calls;
+    expect(bucketsCall).toMatchSnapshot(
+      "Buckets search with empty bounding box."
     );
 
     // Check that the GraphQL response is correct.

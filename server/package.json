@@ -14,10 +14,11 @@
   "author": "poffm",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^2.2.2",
+    "apollo-server": "^2.3.1",
     "dotenv": "^6.1.0",
     "elasticsearch": "^15.2.0",
     "graphql": "^14.0.2",
+    "latlon-geohash": "^1.1.0",
     "mysql2": "^1.6.4",
     "npm-run-all": "^4.1.5",
     "sequelize": "^4.41.1",
@@ -31,10 +32,11 @@
     "@types/elasticsearch": "^5.0.28",
     "@types/graphql": "^14.0.3",
     "@types/jest": "^23.3.9",
+    "@types/latlon-geohash": "^1.1.0",
     "@types/node": "^10.12.5",
     "@types/sequelize": "^4.27.30",
     "@types/xlsx": "0.0.36",
-    "apollo-server-testing": "^2.2.2",
+    "apollo-server-testing": "^2.3.1",
     "jest": "^23.6.0",
     "ts-jest": "^23.10.5"
   }

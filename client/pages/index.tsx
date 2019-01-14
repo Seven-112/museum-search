@@ -53,14 +53,10 @@ class MuseumSearchPage extends React.Component<
   onMapMove = debounce<MoveHandler>(box => {
     this.search({
       within: JSON.stringify({
-        topLeft: {
-          latitude: box.getNorth(),
-          longitude: box.getWest()
-        },
-        bottomRight: {
-          latitude: box.getSouth(),
-          longitude: box.getEast()
-        }
+        top: box.getNorth(),
+        left: box.getWest(),
+        bottom: box.getSouth(),
+        right: box.getEast()
       })
     });
   }, 200);

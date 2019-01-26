@@ -27,7 +27,7 @@ interface MuseumMapVariables {
 }
 
 /** MuseumMapObjects query. */
-const GET_MUSEUM_MAP_OBJECTS = gql`
+export const GET_MUSEUM_MAP_OBJECTS = gql`
   query museumMapObjects($query: String, $boundingBox: GeoBoundingBoxInput) {
     museumMapObjects(query: $query, boundingBox: $boundingBox) {
       edges {
@@ -104,23 +104,22 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMap({
         noWrap={true}
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {museumMapObjects
-        ? museumMapObjects.edges.map(edge =>
-            edge.__typename == "GeoPointBucketEdge" ? (
-              <Marker
-                key={`bucket_${edge.node.geoHashKey}`}
-                position={[edge.node.latitude, edge.node.longitude]}
-                icon={bucketMarkerIcon(edge.node.count)}
-              />
-            ) : (
-              <Marker
-                key={`museum_${edge.node.id}`}
-                position={[edge.node.latitude, edge.node.longitude]}
-                icon={MUSEUM_MARKER_ICON}
-              />
-            )
+      {museumMapObjects &&
+        museumMapObjects.edges.map(edge =>
+          edge.__typename == "GeoPointBucketEdge" ? (
+            <Marker
+              key={`bucket_${edge.node.geoHashKey}`}
+              position={[edge.node.latitude, edge.node.longitude]}
+              icon={bucketMarkerIcon(edge.node.count)}
+            />
+          ) : (
+            <Marker
+              key={`museum_${edge.node.id}`}
+              position={[edge.node.latitude, edge.node.longitude]}
+              icon={MUSEUM_MARKER_ICON}
+            />
           )
-        : []}
+        )}
     </Map>
   );
 });

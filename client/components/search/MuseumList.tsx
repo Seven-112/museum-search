@@ -17,9 +17,9 @@ interface MuseumListVariables {
 }
 
 /** MuseumList query. */
-const GET_MUSEUM_LIST = gql`
+export const GET_MUSEUM_LIST = gql`
   query($query: String) {
-    museums(query: $query, first: 50) {
+    museums(query: 1, first: 50) {
       edges {
         node {
           id
@@ -55,11 +55,9 @@ export const MuseumList = withMuseumList(function MuseumList({
 }) {
   return (
     <ul className="list-group">
-      {loading ? (
-        "Loading..."
-      ) : error ? (
-        <div className="alert alert-danger">{error}</div>
-      ) : museums ? (
+      {loading && "Loading..."}
+      {error && <div className="alert alert-danger">{error.message}</div>}
+      {museums &&
         museums.edges.map(edge => (
           <li key={edge.node.id} className="list-group-item">
             <strong>{edge.node.name}</strong>
@@ -70,8 +68,7 @@ export const MuseumList = withMuseumList(function MuseumList({
                 .join(" - ")}
             </div>
           </li>
-        ))
-      ) : null}
+        ))}
     </ul>
   );
 });

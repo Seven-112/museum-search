@@ -5,13 +5,14 @@ import { withRouter, WithRouterProps } from "next/router";
 import React from "react";
 import Head from "../components/head";
 import { MuseumList } from "../components/search/MuseumList";
-import { MuseumListQuery } from "../components/search/MuseumListQuery";
 import { MoveHandler, MuseumMapProps } from "../components/search/MuseumMap";
-import { MuseumMapQuery } from "../components/search/MuseumMapQuery";
 
 interface MuseumSearchPageQuery {
   q?: string;
-  within?: string;
+}
+
+interface MuseumSearchPageState {
+  boundingBox?: object;
 }
 
 /**
@@ -29,6 +30,7 @@ const MUSEUMSEARCH_PAGE_CSS = `
   }
 `;
 
+// Only load the MuseumMap component in the browser because Leaflet causes SSR to fail.
 const MuseumMap = dynamic<MuseumMapProps>(
   (async () =>
     (await import("../components/search/MuseumMap")).MuseumMap) as any,
@@ -36,33 +38,34 @@ const MuseumMap = dynamic<MuseumMapProps>(
 );
 
 class MuseumSearchPage extends React.Component<
-  WithRouterProps<MuseumSearchPageQuery>
+  WithRouterProps<MuseumSearchPageQuery>,
+  MuseumSearchPageState
 > {
-  search({ q, within }: MuseumSearchPageQuery) {
+  state: MuseumSearchPageState = {};
+
+  search({ q }: MuseumSearchPageQuery) {
     const { router } = this.props;
 
     router.push({
       pathname: "/index",
-      query: {
-        q: q || router.query.q,
-        within: within || router.query.within
-      }
+      query: { q }
     });
   }
 
   onMapMove = debounce<MoveHandler>(box => {
-    this.search({
-      within: JSON.stringify({
+    this.setState({
+      boundingBox: {
         top: box.getNorth(),
         left: box.getWest(),
         bottom: box.getSouth(),
         right: box.getEast()
-      })
+      }
     });
   }, 200);
 
   render() {
     const { router } = this.props;
+    const { boundingBox } = this.state;
 
     return (
       <div className="container-fluid d-flex flex-column flex-fill">
@@ -71,51 +74,34 @@ class MuseumSearchPage extends React.Component<
         <div className="row flex-shrink-0">
           <h1 className="col-12">Museum Search</h1>
         </div>
-        <MuseumListQuery variables={{ query: router.query.q || "museums" }}>
-          {({ loading, error, data }) => (
-            <div className="row flex-fill">
-              <div className="col-md-3">
-                <div className="card card-body h-100">
-                  <Formik
-                    initialValues={{ query: router.query.q }}
-                    onSubmit={values => this.search({ q: values.query })}
-                  >
-                    <Form>
-                      <Field
-                        className="form-control form-group"
-                        autoComplete="off"
-                        name="query"
-                      />
-                    </Form>
-                  </Formik>
-                  <div style={{ overflowY: "scroll" }}>
-                    <MuseumList
-                      loading={loading}
-                      error={error && error.message}
-                      museumConnection={data && data.museums}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-9">
-                <MuseumMapQuery
-                  variables={{
-                    query: router.query.q || "",
-                    boundingBox:
-                      JSON.parse(router.query.within || null) || undefined
-                  }}
-                >
-                  {({ data }) => (
-                    <MuseumMap
-                      onMove={this.onMapMove}
-                      museumMapObjects={data && data.museumMapObjects}
-                    />
-                  )}
-                </MuseumMapQuery>
+        <div className="row flex-fill">
+          <div className="col-md-3">
+            <div className="card card-body h-100">
+              <Formik
+                initialValues={{ query: router.query.q }}
+                onSubmit={values => this.search({ q: values.query })}
+              >
+                <Form>
+                  <Field
+                    className="form-control form-group"
+                    autoComplete="off"
+                    name="query"
+                  />
+                </Form>
+              </Formik>
+              <div style={{ overflowY: "scroll" }}>
+                <MuseumList query={router.query.q || "museum"} />
               </div>
             </div>
-          )}
-        </MuseumListQuery>
+          </div>
+          <div className="col-md-9">
+            <MuseumMap
+              boundingBox={boundingBox}
+              query={router.query.q}
+              onMove={this.onMapMove}
+            />
+          </div>
+        </div>
       </div>
     );
   }

@@ -19,7 +19,7 @@ interface MuseumListVariables {
 /** MuseumList query. */
 export const GET_MUSEUM_LIST = gql`
   query($query: String) {
-    museums(query: 1, first: 50) {
+    museums(query: $query, first: 50) {
       edges {
         node {
           id

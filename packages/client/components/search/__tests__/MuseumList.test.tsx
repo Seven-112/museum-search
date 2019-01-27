@@ -95,7 +95,7 @@ describe("MuseumList component", () => {
 
   it("Renders an error.", async () => {
     const wrapper = mountWithContext(<MuseumList query="Give me an error!" />);
-    await wait(0);
+    await wait(2);
     wrapper.update();
     expect(toJson(wrapper.find("MuseumList").children())).toMatchSnapshot();
   });

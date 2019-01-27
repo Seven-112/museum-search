@@ -4,7 +4,14 @@ env:
 language: node_js
 node_js:
   - "10"
+before_install:
+  # Setup yarn
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+  - export PATH=$HOME/.yarn/bin:$PATH
+cache:
+  yarn: true
 before_script:
+  # Setup codeclimate reporter
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build

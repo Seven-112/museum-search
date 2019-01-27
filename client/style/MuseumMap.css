@@ -1,3 +1,14 @@
+/* Museum marker styles: */
+.museum-marker {
+  color: black;
+  text-shadow:
+    -2px -2px 0 white,
+    2px -2px 0 white,
+    -2px 2px 0 white,
+    2px 2px 0 white;
+}
+
+/* Marker cluster styles: */
 /* Copied from https://github.com/mapbox/supercluster/blob/master/demo/cluster.css */
 
 .marker-cluster-small {

@@ -52,7 +52,9 @@ class MuseumSearchPage extends React.Component<
     });
   }
 
-  onMapMove = debounce<MoveHandler>(box => {
+  onMapMove = debounce<MoveHandler>(event => {
+    const box = event.target.getBounds();
+
     this.setState({
       boundingBox: {
         top: box.getNorth(),

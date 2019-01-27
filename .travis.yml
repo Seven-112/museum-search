@@ -4,14 +4,23 @@ env:
 language: node_js
 node_js:
   - "10"
+before_install:
+  # Setup yarn
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+  - export PATH=$HOME/.yarn/bin:$PATH
+cache:
+  yarn: true
 before_script:
+  # Setup codeclimate reporter
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-script: npm run test:coverage
+script: yarn workspaces run test:coverage --ci
 after_script:
+  # Format client coverage
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.client.json packages/client/coverage/lcov.info
   # Format server coverage
-  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.server.json server/coverage/lcov.info
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.server.json packages/server/coverage/lcov.info
   # Sum coverage parts into coverage/codeclimate.json
   - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 1
   # Upload coverage/codeclimate.json

@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "migrate": "sequelize db:migrate",
     "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js",
     "index": "ts-node ./src/scripts/build-elasticsearch-index.ts",

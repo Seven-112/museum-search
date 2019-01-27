@@ -1,7 +1,9 @@
 {
   "name": "create-next-example-app",
+  "version": "0.0.0",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "next": "next",
     "dev": "run-p next proxy",
     "proxy": "http-proxy /graphql=localhost:4000 3000",

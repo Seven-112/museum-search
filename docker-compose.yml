@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # GraphQL API app
   museum-api:
-    build: ./server
+    build: ./packages/server
     image: poffm/museum-search-api:latest
     environment:
       - "DB_HOST=mysql"
@@ -11,7 +11,7 @@ services:
       - "4000:4000"
   # Migrates the DB schema, imports the CSV data if specified, builds the elasticsearch index
   museum-api-migrate:
-    build: ./server
+    build: ./packages/server
     image: poffm/museum-search-api:latest
     environment:
       - "DB_HOST=mysql"
@@ -19,7 +19,7 @@ services:
       - "MUSEUMS_CSV=${MUSEUMS_CSV}"
     volumes:
       - ./data:/data
-    command: npm run all-data-setup
+    command: yarn all-data-setup
   # Relational Database
   mysql:
     image: mysql:5.7

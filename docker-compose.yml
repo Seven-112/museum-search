@@ -2,7 +2,9 @@ version: "3.6"
 services:
   # GraphQL API app
   museum-api:
-    build: ./packages/server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     image: poffm/museum-search-api:latest
     environment:
       - "DB_HOST=mysql"
@@ -11,7 +13,9 @@ services:
       - "4000:4000"
   # Migrates the DB schema, imports the CSV data if specified, builds the elasticsearch index
   museum-api-migrate:
-    build: ./packages/server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     image: poffm/museum-search-api:latest
     environment:
       - "DB_HOST=mysql"

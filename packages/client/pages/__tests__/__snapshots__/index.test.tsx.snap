@@ -21,7 +21,7 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
     title="Museum Search"
   />
   <div
-    className="row flex-shrink-0"
+    className="flex-shrink-0"
   >
     <h1
       className="col-12"
@@ -33,32 +33,36 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
     className="row flex-fill"
   >
     <div
-      className="col-md-3"
+      className="col-md-3 p-0"
     >
       <div
-        className="card card-body h-100"
+        className="card h-100"
       >
-        <Formik
-          enableReinitialize={false}
-          initialValues={
-            Object {
-              "query": undefined,
-            }
-          }
-          isInitialValid={false}
-          onSubmit={[Function]}
-          validateOnBlur={true}
-          validateOnChange={true}
+        <div
+          className="card-body flex-grow-0"
         >
-          <Form>
-            <FormikConnect(FieldInner)
-              autoComplete="off"
-              className="form-control form-group"
-              name="query"
-              placeholder="Search..."
-            />
-          </Form>
-        </Formik>
+          <Formik
+            enableReinitialize={false}
+            initialValues={
+              Object {
+                "query": undefined,
+              }
+            }
+            isInitialValid={false}
+            onSubmit={[Function]}
+            validateOnBlur={true}
+            validateOnChange={true}
+          >
+            <Form>
+              <FormikConnect(FieldInner)
+                autoComplete="off"
+                className="form-control"
+                name="query"
+                placeholder="Search..."
+              />
+            </Form>
+          </Formik>
+        </div>
         <div
           style={
             Object {
@@ -73,7 +77,7 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
       </div>
     </div>
     <div
-      className="col-md-9"
+      className="col-md-9 p-0"
     >
       <LoadableComponent
         onMove={[Function]}

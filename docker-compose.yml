@@ -2,7 +2,9 @@ version: "3.6"
 services:
   # Front-end web browser app
   museum-client:
-    build: ./packages/client
+    build:
+      context: .
+      dockerfile: Dockerfile.client
     image: poffm/museum-search-client:latest
     ports:
       - "3000:3000"

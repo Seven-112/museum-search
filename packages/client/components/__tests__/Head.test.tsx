@@ -1,5 +1,5 @@
 import { shallow } from "enzyme";
-import { Head } from "../head";
+import { Head } from "../Head";
 import toJson from "enzyme-to-json";
 
 describe("Head component", () => {

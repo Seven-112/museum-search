@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import dynamic from "next/dynamic";
 import { withRouter, WithRouterProps } from "next/router";
 import React from "react";
-import Head from "../components/head";
+import { Head } from "../components/Head";
 import { MuseumList } from "../components/search/MuseumList";
 import { MoveHandler, MuseumMapProps } from "../components/search/MuseumMap";
 

@@ -37,7 +37,7 @@ const MuseumMap = dynamic<MuseumMapProps>(
   { ssr: false }
 );
 
-class MuseumSearchPage extends React.Component<
+export class MuseumSearchPage extends React.Component<
   WithRouterProps<MuseumSearchPageQuery>,
   MuseumSearchPageState
 > {
@@ -47,14 +47,14 @@ class MuseumSearchPage extends React.Component<
     const { router } = this.props;
 
     router.push({
-      pathname: "/index",
+      pathname: "/",
       query: { q }
     });
   }
 
   onMapMove = debounce<MoveHandler>(event => {
     const box = event.target.getBounds();
-
+    
     this.setState({
       boundingBox: {
         top: box.getNorth(),
@@ -88,6 +88,7 @@ class MuseumSearchPage extends React.Component<
                     className="form-control form-group"
                     autoComplete="off"
                     name="query"
+                    placeholder="Search..."
                   />
                 </Form>
               </Formik>

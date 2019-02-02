@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`create museums table migration Creates the museums table.: create museums table migration. 1`] = `
+Array [
+  "Museums",
+  Object {
+    "alternateName": Object {
+      "type": "STRING",
+    },
+    "city": Object {
+      "type": "STRING",
+    },
+    "createdAt": Object {
+      "allowNull": false,
+      "type": "DATE",
+    },
+    "id": Object {
+      "allowNull": false,
+      "autoIncrement": true,
+      "primaryKey": true,
+      "type": "INTEGER",
+    },
+    "institutionName": Object {
+      "type": "STRING",
+    },
+    "latitude": Object {
+      "type": "DOUBLE",
+    },
+    "legalName": Object {
+      "type": "STRING",
+    },
+    "longitude": Object {
+      "type": "DOUBLE",
+    },
+    "museumType": Object {
+      "type": "STRING",
+    },
+    "name": Object {
+      "type": "STRING",
+    },
+    "phoneNumber": Object {
+      "type": "STRING",
+    },
+    "state": Object {
+      "type": "STRING",
+    },
+    "streetAddress": Object {
+      "type": "STRING",
+    },
+    "updatedAt": Object {
+      "allowNull": false,
+      "type": "DATE",
+    },
+    "zipCode": Object {
+      "type": "STRING",
+    },
+  },
+]
+`;

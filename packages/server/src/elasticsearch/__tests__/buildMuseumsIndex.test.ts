@@ -3,33 +3,31 @@ import { MuseumAttributes } from "../../sequelize/models/museum";
 import { buildMuseumsIndex } from "../buildMuseumsIndex";
 
 // Create mock elasticsearch client functions.
-const ping = jest.fn();
-const exists = jest.fn(async () => false);
-const create = jest.fn(async () => {});
-const putMapping = jest.fn(async () => {});
+const mockPing = jest.fn();
+const mockExists = jest.fn(async () => false);
+const mockCreate = jest.fn(async () => {});
+const mockPutMapping = jest.fn(async () => {});
 
-const bulk = jest.fn(async () => {});
+const mockBulk = jest.fn(async () => {});
 
 // Mock the elasticsearch index builder's usage of the elasticsearch Client.
 jest.mock("elasticsearch", () => ({
   Client: class {
-    ping = ping;
+    ping = mockPing;
 
     indices = {
-      exists,
-      create,
-      putMapping
+      exists: mockExists,
+      create: mockCreate,
+      putMapping: mockPutMapping
     };
 
-    bulk = bulk;
+    bulk = mockBulk;
   }
 }));
 
-let findAllSpy: jest.SpyInstance;
-
-beforeAll(() => {
+describe("buildMuseumsIndex", () => {
   // Return mock results for Museum's findAll query.
-  findAllSpy = jest.spyOn(db.Museum, "findAll").mockImplementation(() => {
+  jest.spyOn(db.Museum, "findAll").mockImplementation(() => {
     // Create mock museum data.
     const mockData: MuseumAttributes[] = [
       {
@@ -46,29 +44,26 @@ beforeAll(() => {
 
     return mockData.map(data => db.Museum.build(data));
   });
-});
 
-afterAll(() => {
-  // Restore the findAll spy.
-  findAllSpy.mockRestore();
-});
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-describe("build-elasticsearch-index", () => {
-  it("builds the elasticsearch index", async () => {
-    // Execute the index builder.
+  it("Builds the elasticsearch index.", async () => {
+    // Run the index builder.
     await buildMuseumsIndex();
 
-    expect(ping.mock.calls.length).toEqual(1);
-    expect(ping.mock.calls[0][0]).toEqual({});
+    expect(mockPing).toHaveBeenCalledTimes(1);
+    expect(mockPing).lastCalledWith({});
 
-    expect(exists.mock.calls.length).toEqual(1);
-    expect(exists.mock.calls[0][0]).toEqual({ index: "museums" });
+    expect(mockExists.mock.calls.length).toEqual(1);
+    expect(mockExists).lastCalledWith({ index: "museums" });
 
-    expect(create.mock.calls.length).toEqual(1);
-    expect(create.mock.calls[0][0]).toEqual({ index: "museums" });
+    expect(mockCreate.mock.calls.length).toEqual(1);
+    expect(mockCreate).lastCalledWith({ index: "museums" });
 
-    expect(putMapping.mock.calls.length).toEqual(1);
-    expect(putMapping.mock.calls[0][0]).toEqual({
+    expect(mockPutMapping.mock.calls.length).toEqual(1);
+    expect(mockPutMapping).lastCalledWith({
       index: "museums",
       type: "museum",
       body: {
@@ -82,7 +77,16 @@ describe("build-elasticsearch-index", () => {
       }
     });
 
-    expect(bulk.mock.calls.length).toEqual(1);
-    expect(bulk.mock.calls[0][0]).toMatchSnapshot("bulk operation");
+    expect(mockBulk).toHaveBeenCalledTimes(1);
+    expect(mockBulk.mock.calls[0][0]).toMatchSnapshot("bulk operation");
+  });
+
+  it("Does not try to create the museums index if it already exists.", async () => {
+    mockExists.mockReturnValueOnce(true);
+
+    // Run the index builder.
+    await buildMuseumsIndex();
+
+    expect(mockCreate.mock.calls.length).toEqual(0);
   });
 });

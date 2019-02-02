@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`build-elasticsearch-index builds the elasticsearch index: bulk operation 1`] = `
+exports[`buildMuseumsIndex Builds the elasticsearch index.: bulk operation 1`] = `
 Object {
   "body": Array [
     Object {

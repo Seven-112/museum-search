@@ -17,6 +17,8 @@ before_script:
   - ./cc-test-reporter before-build
 script: yarn workspaces run test:coverage --ci
 after_script:
+  # Format client coverage
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.client.json packages/client/coverage/lcov.info
   # Format server coverage
   - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.server.json packages/server/coverage/lcov.info
   # Sum coverage parts into coverage/codeclimate.json

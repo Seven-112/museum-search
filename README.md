@@ -1,4 +1,5 @@
 # museum-search
+[![Build Status](https://travis-ci.org/PoffM/museum-search.svg?branch=master)](https://travis-ci.org/PoffM/museum-search)
 
 Multi-container application providing a GraphQL search API for museum names and locations.
 

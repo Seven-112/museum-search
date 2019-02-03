@@ -1,5 +1,7 @@
 # museum-search
 [![Build Status](https://travis-ci.org/PoffM/museum-search.svg?branch=master)](https://travis-ci.org/PoffM/museum-search)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/9e855a9c995a3c935ecd/test_coverage)](https://codeclimate.com/github/PoffM/museum-search/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9e855a9c995a3c935ecd/maintainability)](https://codeclimate.com/github/PoffM/museum-search/maintainability)
 
 Multi-container application providing a GraphQL search API for museum names and locations.
 

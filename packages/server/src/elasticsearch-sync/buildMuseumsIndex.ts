@@ -55,4 +55,7 @@ export async function buildMuseumsIndex() {
     body: indexBody
   });
   console.log("Museum data indexed.");
+
+  esClient.close();
+  db.sequelize.close();
 };

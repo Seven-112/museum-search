@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-import { buildMuseumsIndex } from "../elasticsearch/buildMuseumsIndex";
+import { buildMuseumsIndex } from "../elasticsearch-sync/buildMuseumsIndex";
 
-const onFinish = () => process.exit();
-buildMuseumsIndex().then(onFinish, onFinish);
+buildMuseumsIndex();

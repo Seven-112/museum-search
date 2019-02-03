@@ -7,12 +7,14 @@ const mockPing = jest.fn();
 const mockExists = jest.fn(async () => false);
 const mockCreate = jest.fn(async () => {});
 const mockPutMapping = jest.fn(async () => {});
+const mockClose = jest.fn();
 
 const mockBulk = jest.fn(async () => {});
 
 // Mock the elasticsearch index builder's usage of the elasticsearch Client.
 jest.mock("elasticsearch", () => ({
   Client: class {
+    close = mockClose;
     ping = mockPing;
 
     indices = {
@@ -79,6 +81,8 @@ describe("buildMuseumsIndex", () => {
 
     expect(mockBulk).toHaveBeenCalledTimes(1);
     expect(mockBulk.mock.calls[0][0]).toMatchSnapshot("bulk operation");
+
+    expect(mockClose).toHaveBeenCalledTimes(1);
   });
 
   it("Does not try to create the museums index if it already exists.", async () => {

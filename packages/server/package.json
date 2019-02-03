@@ -7,9 +7,9 @@
     "test:coverage": "jest --coverage",
     "migrate": "sequelize db:migrate",
     "csv-seed": "sequelize db:seed --seed .src/sequelize/seeders/20181116002837-add-csv-museums.js",
-    "index": "ts-node ./src/scripts/build-elasticsearch-index.ts",
+    "elasticsearch-sync": "ts-node ./src/scripts/build-elasticsearch-index.ts",
     "wait-for-data-services": "ts-node ./src/scripts/wait-for-data-services.ts",
-    "all-data-setup": "run-s wait-for-data-services migrate csv-seed index",
+    "all-data-setup": "run-s wait-for-data-services migrate csv-seed elasticsearch-sync",
     "start": "ts-node ./src/scripts/launch-graphql-api.ts"
   },
   "author": "poffm",

@@ -3,17 +3,15 @@ import { ResolverContext } from "../types";
 
 export const museums: IFieldResolver<{}, ResolverContext> = async (
   _,
-  args,
+  { first, query },
   { esClient }
 ) => {
   const { hits } = await esClient.search({
     index: "museums",
-    size: args.first || 100,
+    size: first,
     body: {
       query: {
-        multi_match: {
-          query: args.query
-        }
+        multi_match: { query }
       }
     }
   });

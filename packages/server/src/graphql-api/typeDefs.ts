@@ -5,7 +5,7 @@ import { gql } from "apollo-server";
  */
 export const typeDefs = gql`
   type Query {
-    museums(query: String, first: Int): MuseumSearchConnection
+    museums(query: String, first: Int!): MuseumSearchConnection
     museumMapObjects(query: String, boundingBox: GeoBoundingBoxInput): MuseumMapObjectsConnection
   }
 

@@ -29,7 +29,7 @@ docker-compose run -e MUSEUMS_CSV=/data/museums.csv museum-api-migrate
 
 ## Front-end application:
 
-Go to \<dockerhost\> in your browser, where \<dockerhost\> is the host IP running docker.
+Go to \<dockerhost\> in your browser, where \<dockerhost\> is the host IP running docker. This could be localhost, or 192.168.99.100 for docker-machine on Windows.
 
 ## GraphQL Playground UI:
 

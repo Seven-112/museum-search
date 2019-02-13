@@ -17,6 +17,8 @@ This will launch the application with no data.
 
 ## To add data:
 
+This can be done while the app is running.
+
 1. Get "museums.csv" from https://www.kaggle.com/imls/museum-directory
 2. Put museums.csv in the "data" directory at the top of this repo.
 3. From this repo's top directory, run:

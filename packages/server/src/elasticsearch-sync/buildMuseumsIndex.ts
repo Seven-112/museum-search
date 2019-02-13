@@ -50,11 +50,13 @@ export async function buildMuseumsIndex() {
     });
   });
 
-  console.log("Indexing museum data...");
-  await esClient.bulk({
-    body: indexBody
-  });
-  console.log("Museum data indexed.");
+  if (indexBody.length) {
+    console.log("Indexing museum data...");
+    await esClient.bulk({
+      body: indexBody
+    });
+    console.log("Museum data indexed.");
+  }
 
   esClient.close();
   db.sequelize.close();

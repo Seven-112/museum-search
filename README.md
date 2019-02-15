@@ -5,6 +5,12 @@
 
 Multi-container application providing a UI and GraphQL API to search museum names and locations.
 
+You can filter the search results in the list and map UI using a keyword search. You can zoom
+in on the map to get museum counts by more precise areas and see labeled pins on the map for
+individual museums.
+
+![Screenshot](/docs/screenshot.png)
+
 ## To launch:
 
 From this repo's top directory, run:

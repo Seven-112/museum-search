@@ -1,16 +1,33 @@
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import { Formik } from "formik";
 import { MockedProvider } from "react-apollo/test-utils";
+import { act } from "react-dom/test-utils";
 import { MuseumList } from "../../components/search/MuseumList";
 import { MuseumSearchPage } from "../index";
 
 describe("MuseumSearchPage component", () => {
-  it("Shallow renders.", () => {
+  it("Renders the museum search page.", () => {
     const mockRouter = {
       query: {}
     };
-    const wrapper = shallow(<MuseumSearchPage router={mockRouter as any} />);
-    expect(wrapper).toMatchSnapshot("MuseumSearchPage shallow render.");
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
+
+    // Has the title.
+    expect(wrapper.containsMatchingElement(<h1>Museum Search</h1>)).toEqual(
+      true
+    );
+    // Has the search input.
+    expect(wrapper.find("input[placeholder='Search...']").exists()).toEqual(
+      true
+    );
+    // Has the museum list.
+    expect(wrapper.find(MuseumList).exists()).toEqual(true);
+    // Has the museum map, which is loaded dynamically, so it is selected as "LoadableComponent".
+    expect(wrapper.find("LoadableComponent").exists()).toEqual(true);
   });
 
   it("Performs a search using the search input.", () => {
@@ -20,7 +37,11 @@ describe("MuseumSearchPage component", () => {
       push: mockRouterPush,
       query: {}
     };
-    const wrapper = shallow(<MuseumSearchPage router={mockRouter as any} />);
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
 
     // Submit the search form.
     (wrapper.find(Formik).prop("onSubmit") as any)({ query: "space museum" });
@@ -39,21 +60,29 @@ describe("MuseumSearchPage component", () => {
     const mockRouter = {
       query: {}
     };
-    const wrapper = shallow(<MuseumSearchPage router={mockRouter as any} />);
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
 
-    // The MuseumMap loaded dynamically, so it is selected as "LoadableComponent".
-    (wrapper.find("LoadableComponent").prop("onMove") as any)({
-      target: {
-        getBounds() {
-          return {
-            getEast: () => 4,
-            getNorth: () => 1,
-            getSouth: () => 3,
-            getWest: () => 2
-          };
+    act(() => {
+      // The MuseumMap is loaded dynamically, so it is selected as "LoadableComponent".
+      (wrapper.find("LoadableComponent").prop("onMove") as any)({
+        target: {
+          getBounds() {
+            return {
+              getEast: () => 4,
+              getNorth: () => 1,
+              getSouth: () => 3,
+              getWest: () => 2
+            };
+          }
         }
-      }
+      });
     });
+
+    wrapper.update();
 
     expect(wrapper.find("LoadableComponent").prop("boundingBox")).toEqual({
       bottom: 3,
@@ -67,7 +96,11 @@ describe("MuseumSearchPage component", () => {
     const mockRouter = {
       query: { q: "zoo" }
     };
-    const wrapper = shallow(<MuseumSearchPage router={mockRouter as any} />);
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
 
     expect(wrapper.find(MuseumList).prop("query")).toEqual("zoo");
 

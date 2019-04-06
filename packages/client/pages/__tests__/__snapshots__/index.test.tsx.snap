@@ -2,7 +2,7 @@
 
 exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow render. 1`] = `
 <div
-  className="container-fluid p-0 d-flex flex-column flex-fill"
+  className="container-fluid"
 >
   <style>
     
@@ -11,8 +11,6 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
     height: 100%;
   }
   #__next {
-    display: flex;
-    flex-flow: column;
     height: 100%;
   }
 
@@ -20,23 +18,19 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
   <Head
     title="Museum Search"
   />
-  <div
-    className="flex-shrink-0"
-  >
-    <h1
-      className="col-12"
-    >
+  <div>
+    <h1>
       Museum Search
     </h1>
   </div>
   <div
-    className="d-flex flex-row h-100"
+    className="row"
   >
     <div
-      className="d-flex flex-column flex-grow-1 card"
+      className="col-md-3 p-0 card"
     >
       <div
-        className="card-body flex-grow-0"
+        className="card-body"
       >
         <Formik
           enableReinitialize={false}
@@ -61,6 +55,7 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
         </Formik>
       </div>
       <div
+        className="list-container"
         style={
           Object {
             "overflowY": "scroll",

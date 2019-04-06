@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "jsx": "preserve",
-    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "jsx": "preserve",
+    "lib": ["dom", "es2017"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "removeComments": false,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    "removeComments": false,
     "skipLibCheck": true,
-    "lib": ["dom", "es2017"]
+    "sourceMap": true,
+    "target": "esnext"
   }
 }

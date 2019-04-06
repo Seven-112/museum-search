@@ -4,8 +4,8 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test": "tsc && jest",
+    "test:coverage": "tsc && jest --coverage",
     "next": "next",
     "dev": "run-p next proxy",
     "proxy": "micro-proxy -r ./dev-proxy-config.json -p 9000",
@@ -55,7 +55,7 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^4.0.0",
-    "typescript": "^3.2.1",
+    "typescript": "^3.4.2",
     "waait": "^1.0.3",
     "webpack": "^4.29.0"
   }

@@ -2,13 +2,13 @@
 
 exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow render. 1`] = `
 <div
-  className="container-fluid d-flex flex-column flex-fill"
+  className="container-fluid p-0 d-flex flex-column flex-fill"
 >
   <style>
     
   html, body {
     margin: 0;
-    height: 100%
+    height: 100%;
   }
   #__next {
     display: flex;
@@ -30,50 +30,50 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
     </h1>
   </div>
   <div
-    className="row flex-fill"
+    className="d-flex flex-row h-100"
   >
     <div
-      className="col-md-3 p-0"
+      className="d-flex flex-column flex-grow-1 card"
     >
       <div
-        className="card h-100"
+        className="card-body flex-grow-0"
       >
-        <div
-          className="card-body flex-grow-0"
-        >
-          <Formik
-            enableReinitialize={false}
-            initialValues={
-              Object {
-                "query": undefined,
-              }
-            }
-            isInitialValid={false}
-            onSubmit={[Function]}
-            validateOnBlur={true}
-            validateOnChange={true}
-          >
-            <Form>
-              <FormikConnect(FieldInner)
-                autoComplete="off"
-                className="form-control"
-                name="query"
-                placeholder="Search..."
-              />
-            </Form>
-          </Formik>
-        </div>
-        <div
-          style={
+        <Formik
+          enableReinitialize={false}
+          initialValues={
             Object {
-              "overflowY": "scroll",
+              "query": undefined,
             }
           }
+          isInitialValid={false}
+          onSubmit={[Function]}
+          validateOnBlur={true}
+          validateOnChange={true}
         >
           <Apollo(MuseumListInternal)
             query="museum"
           />
         </div>
+          <Form>
+            <FormikConnect(FieldInner)
+              autoComplete="off"
+              className="form-control"
+              name="query"
+              placeholder="Search..."
+            />
+          </Form>
+        </Formik>
+      </div>
+      <div
+        style={
+          Object {
+            "overflowY": "scroll",
+          }
+        }
+      >
+        <Apollo(MuseumListInternal)
+          query="museum"
+        />
       </div>
     </div>
     <div

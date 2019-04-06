@@ -50,10 +50,6 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
           validateOnBlur={true}
           validateOnChange={true}
         >
-          <Apollo(MuseumListInternal)
-            query="museum"
-          />
-        </div>
           <Form>
             <FormikConnect(FieldInner)
               autoComplete="off"

@@ -4,17 +4,18 @@ import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
 import { Map, Marker } from "react-leaflet";
 import { fragmentTypes } from "../../../fragmentTypes";
 import { GET_MUSEUM_MAP_OBJECTS, MuseumMap } from "../MuseumMap";
+// tslint:disable-next-line: no-var-requires
 const wait = require("waait");
 
 /** An example of a bounding box with space museums in Florida. */
 const FLORIDA_SPACE_MUSEUM_VARIABLES = {
-  query: "space",
   boundingBox: {
-    top: 29.284003336047167,
-    left: -82.01839881762265,
     bottom: 27.222883510268815,
-    right: -79.4503446184039
-  }
+    left: -82.01839881762265,
+    right: -79.4503446184039,
+    top: 29.284003336047167
+  },
+  query: "space"
 };
 
 const mocks: MockedResponse[] = [
@@ -26,39 +27,39 @@ const mocks: MockedResponse[] = [
     result: {
       data: {
         museumMapObjects: {
+          __typename: "MuseumMapObjectsConnection",
           edges: [
             {
+              __typename: "GeoPointBucketEdge",
               node: {
                 __typename: "GeoPointBucket",
+                count: 3,
                 geoHashKey: "djnd",
                 latitude: 28.60317611694336,
-                longitude: -80.76131184895833,
-                count: 3
-              },
-              __typename: "GeoPointBucketEdge"
+                longitude: -80.76131184895833
+              }
             },
             {
+              __typename: "GeoPointBucketEdge",
               node: {
                 __typename: "GeoPointBucket",
+                count: 2,
                 geoHashKey: "djn9",
                 latitude: 28.38445472717285,
-                longitude: -80.68020248413086,
-                count: 2
-              },
-              __typename: "GeoPointBucketEdge"
+                longitude: -80.68020248413086
+              }
             },
             {
+              __typename: "MuseumSearchEdge",
               node: {
                 __typename: "Museum",
                 id: 6563,
-                name: "SPACE COAST KIDS DISCOVERY CENTER",
                 latitude: 28.17638,
-                longitude: -80.67145
-              },
-              __typename: "MuseumSearchEdge"
+                longitude: -80.67145,
+                name: "SPACE COAST KIDS DISCOVERY CENTER"
+              }
             }
-          ],
-          __typename: "MuseumMapObjectsConnection"
+          ]
         }
       }
     }
@@ -99,24 +100,24 @@ describe("MuseumMap component", () => {
 
     expect(markers.at(0).props()).toEqual(
       objectContaining({
-        position: [28.60317611694336, -80.76131184895833],
-        icon: anything()
+        icon: anything(),
+        position: [28.60317611694336, -80.76131184895833]
       })
     );
     expect(markers.at(0).key()).toEqual("bucket_djnd");
 
     expect(markers.at(1).props()).toEqual(
       objectContaining({
-        position: [28.38445472717285, -80.68020248413086],
-        icon: anything()
+        icon: anything(),
+        position: [28.38445472717285, -80.68020248413086]
       })
     );
     expect(markers.at(1).key()).toEqual("bucket_djn9");
 
     expect(markers.at(2).props()).toEqual(
       objectContaining({
-        position: [28.17638, -80.67145],
-        icon: anything()
+        icon: anything(),
+        position: [28.17638, -80.67145]
       })
     );
     expect(markers.at(2).key()).toEqual("museum_6563");

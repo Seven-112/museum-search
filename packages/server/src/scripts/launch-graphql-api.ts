@@ -1,7 +1,8 @@
+// tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 
-import { createServer } from "../graphql-api/createServer";
 import { Client } from "elasticsearch";
+import { createServer } from "../graphql-api/createServer";
 
 const esClient = new Client({
   host: process.env.ES_HOST

@@ -2,16 +2,16 @@ import { ApolloServer } from "apollo-server";
 import { Client } from "elasticsearch";
 import { resolvers } from "./resolvers";
 import { typeDefs } from "./typeDefs";
-import { ResolverContext } from "./types";
+import { IResolverContext } from "./types";
 
-interface CreateServerParams {
+interface ICreateServerParams {
   esClient: Client;
 }
 
-export function createServer({ esClient }: CreateServerParams) {
+export function createServer({ esClient }: ICreateServerParams) {
   return new ApolloServer({
-    typeDefs,
+    context: { esClient } as IResolverContext,
     resolvers,
-    context: { esClient } as ResolverContext
+    typeDefs
   });
 }

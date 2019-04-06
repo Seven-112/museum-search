@@ -1,8 +1,10 @@
 // Waits for data services to be up. This is used to delay scripts that depend
 // on external services like MySQL and Elasticsearch until those services are up.
 
+// tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 
+// tslint:disable-next-line: no-var-requires
 const waitOn = require("wait-on");
 
 async function waitForElasticsearch() {

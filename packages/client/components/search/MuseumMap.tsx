@@ -9,19 +9,19 @@ import "../../style/MuseumMap.css";
 export type MoveHandler = (e: LeafletEvent) => void;
 
 /** MuseumMap component props. */
-export interface MuseumMapProps {
+export interface IMuseumMapProps {
   query?: string;
   boundingBox?: object;
   onMove?: MoveHandler;
 }
 
 /** MuseumMap query response. */
-interface MuseumMapResponse {
+interface IMuseumMapResponse {
   museumMapObjects?: any;
 }
 
 /** MuseumMap query variables. */
-interface MuseumMapVariables {
+interface IMuseumMapVariables {
   query?: string;
   boundingBox?: object;
 }
@@ -56,9 +56,9 @@ export const GET_MUSEUM_MAP_OBJECTS = gql`
 
 /** Higher-order component to provide data from the GraphQL API to a React component. */
 const withMuseumMapObjects = graphql<
-  MuseumMapProps,
-  MuseumMapResponse,
-  MuseumMapVariables
+  IMuseumMapProps,
+  IMuseumMapResponse,
+  IMuseumMapVariables
 >(GET_MUSEUM_MAP_OBJECTS, {
   options: ({ boundingBox, query }) => ({
     variables: {
@@ -87,14 +87,14 @@ function bucketMarkerIcon(count: number): any {
   const size = count < 100 ? "small" : count < 1000 ? "medium" : "large";
 
   return divIcon({
-    html: `<div><span>${count}</span></div>`,
     className: `marker-cluster marker-cluster-${size}`,
+    html: `<div><span>${count}</span></div>`,
     iconSize: point(40, 40)
   });
 }
 
 /** MuseumMap component. */
-export const MuseumMap = withMuseumMapObjects(function MuseumMap({
+export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
   data: { museumMapObjects },
   onMove
 }) {

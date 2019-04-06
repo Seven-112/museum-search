@@ -1,4 +1,5 @@
 import { resolve } from "path";
+// tslint:disable-next-line: no-var-requires
 const seeder = require("../20181116002837-add-csv-museums");
 
 let dateNowSpy: jest.SpyInstance<() => number>;

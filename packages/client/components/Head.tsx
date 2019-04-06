@@ -2,11 +2,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "leaflet/dist/leaflet.css";
 import NextHead from "next/head";
 
-interface HeadProps {
+interface IHeadProps {
   title: string;
 }
 
-export function Head({ title }: HeadProps) {
+export function Head({ title }: IHeadProps) {
   return (
     <NextHead>
       <meta charSet="UTF-8" />

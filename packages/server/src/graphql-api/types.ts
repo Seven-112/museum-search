@@ -1,5 +1,5 @@
 import { Client } from "elasticsearch";
 
-export interface ResolverContext {
+export interface IResolverContext {
   esClient: Client;
 }

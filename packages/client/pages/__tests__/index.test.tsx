@@ -45,20 +45,20 @@ describe("MuseumSearchPage component", () => {
       target: {
         getBounds() {
           return {
+            getEast: () => 4,
             getNorth: () => 1,
-            getWest: () => 2,
             getSouth: () => 3,
-            getEast: () => 4
+            getWest: () => 2
           };
         }
       }
     });
 
     expect(wrapper.find("LoadableComponent").prop("boundingBox")).toEqual({
-      top: 1,
-      left: 2,
       bottom: 3,
-      right: 4
+      left: 2,
+      right: 4,
+      top: 1
     });
   });
 

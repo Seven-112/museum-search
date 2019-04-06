@@ -1,8 +1,8 @@
 import { shallow } from "enzyme";
 import Router from "next/router";
 import { FunctionComponent } from "react";
-import MyApp from "../_app";
 import { ApolloProvider } from "react-apollo";
+import MyApp from "../_app";
 
 jest.mock("next/router", () => ({}));
 

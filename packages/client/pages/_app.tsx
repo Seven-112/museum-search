@@ -23,17 +23,7 @@ export default class MyApp extends App {
     this.client = new ApolloClient({ cache });
   }
 
-  static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
-
-    return { pageProps };
-  }
-
-  render() {
+  public render() {
     const { Component, pageProps } = this.props;
 
     return (

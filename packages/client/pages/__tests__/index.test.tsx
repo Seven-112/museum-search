@@ -1,5 +1,6 @@
-import { shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { Formik } from "formik";
+import { MockedProvider } from "react-apollo/test-utils";
 import { MuseumList } from "../../components/search/MuseumList";
 import { MuseumSearchPage } from "../index";
 
@@ -31,7 +32,7 @@ describe("MuseumSearchPage component", () => {
     });
   });
 
-  it("Performs a bounding-box search when the map is moved.", async () => {
+  it("Performs a bounding-box search when the map is moved.", () => {
     // Un-debounce the onMapMove function for this test.
     jest.spyOn(require("lodash"), "debounce").mockImplementationOnce(fn => fn);
 
@@ -62,7 +63,7 @@ describe("MuseumSearchPage component", () => {
     });
   });
 
-  it("Passes the search query into child components.", async () => {
+  it("Passes the search query into child components.", () => {
     const mockRouter = {
       query: { q: "zoo" }
     };
@@ -72,5 +73,33 @@ describe("MuseumSearchPage component", () => {
 
     // The MuseumMap loaded dynamically, so it is selected as "LoadableComponent".
     expect(wrapper.find("LoadableComponent").prop("query")).toEqual("zoo");
+  });
+
+  it("Resizes the list container after the page mounts and after the window resizes.", () => {
+    (window.innerHeight as any) = 768;
+    const mockRouter = {
+      query: {}
+    };
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
+
+    const listContainer = wrapper.find(".list-container").getDOMNode();
+
+    // The list container's height should be the available space minus 1.
+    // (Page elements' heights above the list are ignored for the test.)
+    expect(listContainer.getAttribute("style")).toEqual(
+      "overflow-y: scroll; height: 767px;"
+    );
+
+    // Test a window resize:
+    (window.innerHeight as any) = 500;
+    window.onresize(null);
+
+    expect(listContainer.getAttribute("style")).toEqual(
+      "overflow-y: scroll; height: 499px;"
+    );
   });
 });

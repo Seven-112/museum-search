@@ -24,8 +24,6 @@ const MUSEUMSEARCH_PAGE_CSS = `
     height: 100%;
   }
   #__next {
-    display: flex;
-    flex-flow: column;
     height: 100%;
   }
 `;
@@ -43,6 +41,8 @@ export class MuseumSearchPage extends React.Component<
 > {
   public state: IMuseumSearchPageState = {};
 
+  private listContainer: HTMLDivElement;
+
   private onMapMove = debounce<MoveHandler>(event => {
     const box = event.target.getBounds();
 
@@ -56,20 +56,35 @@ export class MuseumSearchPage extends React.Component<
     });
   }, 200);
 
+  public componentDidMount() {
+    const resizeListContainer = () => {
+      if (this.listContainer) {
+        const listHeight =
+          window.innerHeight -
+          this.listContainer.getBoundingClientRect().top -
+          1;
+        this.listContainer.style.height = `${listHeight}px`;
+      }
+    };
+
+    window.onresize = resizeListContainer;
+    resizeListContainer();
+  }
+
   public render() {
     const { router } = this.props;
     const { boundingBox } = this.state;
 
     return (
-      <div className="container-fluid p-0 d-flex flex-column flex-fill">
+      <div className="container-fluid">
         <style>{MUSEUMSEARCH_PAGE_CSS}</style>
         <Head title="Museum Search" />
-        <div className="flex-shrink-0">
-          <h1 className="col-12">Museum Search</h1>
+        <div>
+          <h1>Museum Search</h1>
         </div>
-        <div className="d-flex flex-row h-100">
-          <div className="d-flex flex-column flex-grow-1 card">
-            <div className="card-body flex-grow-0">
+        <div className="row">
+          <div className="col-md-3 p-0 card">
+            <div className="card-body">
               <Formik
                 initialValues={{ query: router.query.q }}
                 onSubmit={values => this.search({ q: values.query })}
@@ -84,7 +99,11 @@ export class MuseumSearchPage extends React.Component<
                 </Form>
               </Formik>
             </div>
-            <div style={{ overflowY: "scroll" }}>
+            <div
+              className="list-container"
+              ref={node => (this.listContainer = node)}
+              style={{ overflowY: "scroll" }}
+            >
               <MuseumList query={router.query.q || "museum"} />
             </div>
           </div>

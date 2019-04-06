@@ -5,13 +5,13 @@ import { withRouter, WithRouterProps } from "next/router";
 import React from "react";
 import { Head } from "../components/Head";
 import { MuseumList } from "../components/search/MuseumList";
-import { MoveHandler, MuseumMapProps } from "../components/search/MuseumMap";
+import { IMuseumMapProps, MoveHandler } from "../components/search/MuseumMap";
 
-interface MuseumSearchPageQuery {
+interface IMuseumSearchPageQuery {
   q?: string;
 }
 
-interface MuseumSearchPageState {
+interface IMuseumSearchPageState {
   boundingBox?: object;
 }
 
@@ -31,41 +31,32 @@ const MUSEUMSEARCH_PAGE_CSS = `
 `;
 
 // Only load the MuseumMap component in the browser because Leaflet causes SSR to fail.
-const MuseumMap = dynamic<MuseumMapProps>(
+const MuseumMap = dynamic<IMuseumMapProps>(
   (async () =>
     (await import("../components/search/MuseumMap")).MuseumMap) as any,
   { ssr: false }
 );
 
 export class MuseumSearchPage extends React.Component<
-  WithRouterProps<MuseumSearchPageQuery>,
-  MuseumSearchPageState
+  WithRouterProps<IMuseumSearchPageQuery>,
+  IMuseumSearchPageState
 > {
-  state: MuseumSearchPageState = {};
+  public state: IMuseumSearchPageState = {};
 
-  search({ q }: MuseumSearchPageQuery) {
-    const { router } = this.props;
-
-    router.push({
-      pathname: "/",
-      query: { q }
-    });
-  }
-
-  onMapMove = debounce<MoveHandler>(event => {
+  private onMapMove = debounce<MoveHandler>(event => {
     const box = event.target.getBounds();
 
     this.setState({
       boundingBox: {
-        top: box.getNorth(),
-        left: box.getWest(),
         bottom: box.getSouth(),
-        right: box.getEast()
+        left: box.getWest(),
+        right: box.getEast(),
+        top: box.getNorth()
       }
     });
   }, 200);
 
-  render() {
+  public render() {
     const { router } = this.props;
     const { boundingBox } = this.state;
 
@@ -107,6 +98,15 @@ export class MuseumSearchPage extends React.Component<
         </div>
       </div>
     );
+  }
+
+  private search({ q }: IMuseumSearchPageQuery) {
+    const { router } = this.props;
+
+    router.push({
+      pathname: "/",
+      query: { q }
+    });
   }
 }
 

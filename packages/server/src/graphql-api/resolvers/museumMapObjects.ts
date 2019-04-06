@@ -1,20 +1,20 @@
-import { IFieldResolver } from "graphql-tools";
-import { ResolverContext } from "../types";
-import { bounds } from "latlon-geohash";
 import { Client } from "elasticsearch";
+import { IFieldResolver } from "graphql-tools";
+import { bounds } from "latlon-geohash";
+import { IResolverContext } from "../types";
 
 /** The maximum geohash precision allowed by ElasticSearch. */
 const MAX_GEOHASH_PRECISION = 12;
 
-export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
+export const museumMapObjects: IFieldResolver<{}, IResolverContext> = async (
   _,
   { query, boundingBox },
   { esClient }
 ) => {
   const geoPointBuckets: any[] = await getMuseumBuckets({
+    boundingBox,
     esClient,
-    query,
-    boundingBox
+    query
   });
 
   const boundingBoxesToUnpack = getBoundingBoxesToUnpack({
@@ -22,9 +22,9 @@ export const museumMapObjects: IFieldResolver<{}, ResolverContext> = async (
   });
 
   const museumHits = await getMuseumHits({
+    boundingBoxesToUnpack,
     esClient,
-    query,
-    boundingBoxesToUnpack
+    query
   });
 
   const edges = getEdges({ geoPointBuckets, museumHits });
@@ -47,33 +47,9 @@ async function getMuseumBuckets({
   boundingBox?: any;
 }) {
   const searchResult = await esClient.search({
-    index: "museums",
-    size: 0,
     body: {
-      query: {
-        bool: {
-          must: query
-            ? {
-                multi_match: {
-                  query
-                }
-              }
-            : undefined,
-          filter: boundingBox
-            ? {
-                geo_bounding_box: {
-                  location: boundingBox
-                }
-              }
-            : undefined
-        }
-      },
       aggregations: {
         museumsGrid: {
-          geohash_grid: {
-            field: "location",
-            precision: getGeoHashPrecision({ boundingBox })
-          },
           aggregations: {
             avgLatitude: {
               avg: {
@@ -85,10 +61,34 @@ async function getMuseumBuckets({
                 field: "longitude"
               }
             }
+          },
+          geohash_grid: {
+            field: "location",
+            precision: getGeoHashPrecision({ boundingBox })
           }
         }
+      },
+      query: {
+        bool: {
+          filter: boundingBox
+            ? {
+                geo_bounding_box: {
+                  location: boundingBox
+                }
+              }
+            : undefined,
+          must: query
+            ? {
+                multi_match: {
+                  query
+                }
+              }
+            : undefined
+        }
       }
-    }
+    },
+    index: "museums",
+    size: 0
   });
 
   return searchResult.aggregations.museumsGrid.buckets;
@@ -127,7 +127,7 @@ export const getGeoHashPrecision = ({ boundingBox }: { boundingBox?: any }) => {
 };
 
 function bucketShouldBeUnpacked(bucket: any): boolean {
-  return bucket.doc_count <= 1 || bucket.key.length == MAX_GEOHASH_PRECISION;
+  return bucket.doc_count <= 1 || bucket.key.length === MAX_GEOHASH_PRECISION;
 }
 
 /**
@@ -147,10 +147,10 @@ function getBoundingBoxesToUnpack({
     .map(bucket => bucket.key)
     .map(geohash => bounds(geohash))
     .map(({ ne, sw }) => ({
-      top: ne.lat,
-      left: sw.lon,
       bottom: sw.lat,
-      right: ne.lon
+      left: sw.lon,
+      right: ne.lon,
+      top: ne.lat
     }));
 }
 
@@ -168,11 +168,10 @@ async function getMuseumHits({
   }
 
   return (await esClient.search({
-    index: "museums",
-    size: 5000,
     body: {
       query: {
         bool: {
+          minimum_should_match: 1,
           must: query
             ? {
                 multi_match: {
@@ -188,11 +187,12 @@ async function getMuseumHits({
                 }
               }
             }
-          })),
-          minimum_should_match: 1
+          }))
         }
       }
-    }
+    },
+    index: "museums",
+    size: 5000
   })).hits.hits;
 }
 
@@ -208,15 +208,15 @@ function getEdges({
       .filter((bucket: any) => !bucketShouldBeUnpacked(bucket))
       .map((bucket: any) => ({
         node: {
-          latitude: bucket.avgLatitude.value,
-          longitude: bucket.avgLongitude.value,
+          count: bucket.doc_count,
           geoHashKey: bucket.key,
-          count: bucket.doc_count
+          latitude: bucket.avgLatitude.value,
+          longitude: bucket.avgLongitude.value
         }
       })),
     ...museumHits.map(hit => ({
-      node: hit._source,
-      cursor: hit._id
+      cursor: hit._id,
+      node: hit._source
     }))
   ];
 }

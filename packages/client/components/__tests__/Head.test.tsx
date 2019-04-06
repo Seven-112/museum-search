@@ -1,6 +1,6 @@
 import { shallow } from "enzyme";
-import { Head } from "../Head";
 import toJson from "enzyme-to-json";
+import { Head } from "../Head";
 
 describe("Head component", () => {
   it("Renders.", () => {

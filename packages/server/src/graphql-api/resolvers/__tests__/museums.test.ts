@@ -1,6 +1,6 @@
 import { gql } from "apollo-server";
 import { createTestClient } from "apollo-server-testing";
-import { Client, SearchResponse, SearchParams } from "elasticsearch";
+import { Client, SearchParams, SearchResponse } from "elasticsearch";
 import { createServer } from "../../createServer";
 
 const SPACE_MUSEUM_QUERY = gql`
@@ -35,37 +35,37 @@ const SPACE_MUSEUM_MOCK_ES_RESPONSE = {
       {
         _id: "123",
         _source: {
-          id: 123,
-          name: "space museum 1",
-          legalName: "testLegalName",
           alternateName: "testAlternateName",
-          museumType: "testType",
-          institutionName: "testInstitutionName",
-          streetAddress: "testAddress",
           city: "testCity",
-          state: "testState",
-          zipCode: "testZipCode",
-          phoneNumber: "testNumber",
+          id: 123,
+          institutionName: "testInstitutionName",
           latitude: 61.17925,
-          longitude: -149.97254
+          legalName: "testLegalName",
+          longitude: -149.97254,
+          museumType: "testType",
+          name: "space museum 1",
+          phoneNumber: "testNumber",
+          state: "testState",
+          streetAddress: "testAddress",
+          zipCode: "testZipCode"
         }
       },
       {
         _id: "555",
         _source: {
-          id: 555,
-          name: "space museum 2",
-          legalName: "testLegalName2",
           alternateName: "testAlternateName2",
-          museumType: "testType2",
-          institutionName: "testInstitutionName2",
-          streetAddress: "testAddress2",
           city: "testCity2",
-          state: "testState2",
-          zipCode: "testZipCode2",
-          phoneNumber: "testNumber2",
+          id: 555,
+          institutionName: "testInstitutionName2",
           latitude: 61.1689,
-          longitude: -149.76708
+          legalName: "testLegalName2",
+          longitude: -149.76708,
+          museumType: "testType2",
+          name: "space museum 2",
+          phoneNumber: "testNumber2",
+          state: "testState2",
+          streetAddress: "testAddress2",
+          zipCode: "testZipCode2"
         }
       }
     ],
@@ -75,7 +75,7 @@ const SPACE_MUSEUM_MOCK_ES_RESPONSE = {
 
 jest.mock("elasticsearch", () => ({
   Client: class {
-    async search(params: SearchParams) {
+    public async search(params: SearchParams) {
       expect(params.index).toEqual("museums");
       expect(params.size).toEqual(2);
       expect(params.body).toEqual({

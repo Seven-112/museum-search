@@ -1,26 +1,26 @@
 import { IFieldResolver } from "graphql-tools";
-import { ResolverContext } from "../types";
+import { IResolverContext } from "../types";
 
-export const museums: IFieldResolver<{}, ResolverContext> = async (
+export const museums: IFieldResolver<{}, IResolverContext> = async (
   _,
   { first, query },
   { esClient }
 ) => {
   const { hits } = await esClient.search({
-    index: "museums",
-    size: first,
     body: {
       query: {
         multi_match: { query }
       }
-    }
+    },
+    index: "museums",
+    size: first
   });
 
   return {
+    count: hits.total,
     edges: hits.hits.map(hit => ({
-      node: hit._source,
-      cursor: hit._id
-    })),
-    count: hits.total
+      cursor: hit._id,
+      node: hit._source
+    }))
   };
 };

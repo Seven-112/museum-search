@@ -21,8 +21,6 @@ export async function buildMuseumsIndex() {
   }
 
   await esClient.indices.putMapping({
-    index: "museums",
-    type: "museum",
     body: {
       museum: {
         properties: {
@@ -31,7 +29,9 @@ export async function buildMuseumsIndex() {
           }
         }
       }
-    }
+    },
+    index: "museums",
+    type: "museum"
   });
   console.log("Museum location geo_point mapping created.");
 
@@ -60,4 +60,4 @@ export async function buildMuseumsIndex() {
 
   esClient.close();
   db.sequelize.close();
-};
+}

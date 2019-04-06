@@ -2,17 +2,17 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
 /** MuseumList component props. */
-interface MuseumListProps {
+interface IMuseumListProps {
   query?: string;
 }
 
 /** MuseumList query response. */
-interface MuseumListResponse {
+interface IMuseumListResponse {
   museums: any;
 }
 
 /** MuseumList query variables. */
-interface MuseumListVariables {
+interface IMuseumListVariables {
   query?: string;
 }
 
@@ -38,9 +38,9 @@ export const GET_MUSEUM_LIST = gql`
 
 /** Higher-order component to provide data from the GraphQL API to a React component. */
 const withMuseumList = graphql<
-  MuseumListProps,
-  MuseumListResponse,
-  MuseumListVariables
+  IMuseumListProps,
+  IMuseumListResponse,
+  IMuseumListVariables
 >(GET_MUSEUM_LIST, {
   options: ({ query }) => ({
     variables: {
@@ -50,7 +50,7 @@ const withMuseumList = graphql<
 });
 
 /** MuseumList component. */
-export const MuseumList = withMuseumList(function MuseumList({
+export const MuseumList = withMuseumList(function MuseumListInternal({
   data: { loading, error, museums }
 }) {
   return (

@@ -1,6 +1,6 @@
-import { Sequelize, STRING, DOUBLE, Instance } from "sequelize";
+import { DOUBLE, Instance, Sequelize, STRING } from "sequelize";
 
-export interface MuseumAttributes {
+export interface IMuseumAttributes {
   id?: number;
   name: string;
   legalName?: string;
@@ -16,24 +16,24 @@ export interface MuseumAttributes {
   longitude?: number;
 }
 
-export type MuseumInstance = Instance<MuseumAttributes> & MuseumAttributes;
+export type MuseumInstance = Instance<IMuseumAttributes> & IMuseumAttributes;
 
 export const museumFactory = (sequelize: Sequelize) => {
-  const Museum = sequelize.define<MuseumInstance, MuseumAttributes>(
+  const Museum = sequelize.define<MuseumInstance, IMuseumAttributes>(
     "Museum",
     {
-      name: STRING,
-      legalName: STRING,
       alternateName: STRING,
-      museumType: STRING,
-      institutionName: STRING,
-      streetAddress: STRING,
       city: STRING,
-      state: STRING,
-      zipCode: STRING,
-      phoneNumber: STRING,
+      institutionName: STRING,
       latitude: DOUBLE,
-      longitude: DOUBLE
+      legalName: STRING,
+      longitude: DOUBLE,
+      museumType: STRING,
+      name: STRING,
+      phoneNumber: STRING,
+      state: STRING,
+      streetAddress: STRING,
+      zipCode: STRING
     },
     {}
   );

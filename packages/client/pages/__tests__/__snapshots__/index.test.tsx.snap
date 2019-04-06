@@ -67,7 +67,7 @@ exports[`MuseumSearchPage component Shallow renders.: MuseumSearchPage shallow r
           }
         }
       >
-        <Apollo(MuseumList)
+        <Apollo(MuseumListInternal)
           query="museum"
         />
       </div>

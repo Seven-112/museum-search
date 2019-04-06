@@ -1,0 +1,6 @@
+{
+  "rules": [
+    { "pathname": "/graphql", "dest": "http://localhost:4000/" },
+    { "pathname": "/**", "dest": "http://localhost:3000/" }
+  ]
+}

@@ -34,9 +34,14 @@ const MuseumMap = dynamic<IMuseumMapProps>(
 export function MuseumSearchPage({
   router
 }: WithRouterProps<IMuseumSearchPageQuery>) {
-  const [boundingBox, setBoundingBox] = useState<object>();
-
   const listContainer = useRef<HTMLDivElement>();
+
+  const [boundingBox, setBoundingBox] = useState<object>();
+  const [highlightedMuseum, setHighlightedMuseum] = useState<object>();
+
+  function onListItemHover(museum: object) {
+    setHighlightedMuseum(museum);
+  }
 
   const onMapMove = debounce<MoveHandler>(event => {
     const box = event.target.getBounds();
@@ -58,13 +63,11 @@ export function MuseumSearchPage({
 
   useEffect(() => {
     const resizeListContainer = () => {
-      if (listContainer) {
-        const listHeight =
-          window.innerHeight -
-          listContainer.current.getBoundingClientRect().top -
-          1;
-        listContainer.current.style.height = `${listHeight}px`;
-      }
+      const listHeight =
+        window.innerHeight -
+        listContainer.current.getBoundingClientRect().top -
+        1;
+      listContainer.current.style.height = `${listHeight}px`;
     };
 
     window.onresize = resizeListContainer;
@@ -100,12 +103,16 @@ export function MuseumSearchPage({
             ref={listContainer}
             style={{ overflowY: "scroll" }}
           >
-            <MuseumList query={router.query.q || "museum"} />
+            <MuseumList
+              onItemHover={onListItemHover}
+              query={router.query.q || "museum"}
+            />
           </div>
         </div>
         <div className="col-md-9 p-0">
           <MuseumMap
             boundingBox={boundingBox}
+            highlightedMuseum={highlightedMuseum}
             query={router.query.q}
             onMove={onMapMove}
           />

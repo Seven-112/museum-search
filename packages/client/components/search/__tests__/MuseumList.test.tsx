@@ -1,9 +1,10 @@
 import { mount } from "enzyme";
-import toJson from "enzyme-to-json";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
-import { GET_MUSEUM_LIST, MuseumList } from "../MuseumList";
+import { GET_MUSEUM_LIST, IMuseumListProps, MuseumList } from "../MuseumList";
 // tslint:disable-next-line: no-var-requires
 const wait = require("waait");
+
+const DEFAULT_PROPS: IMuseumListProps = { onItemHover: () => undefined };
 
 const mocks: MockedResponse[] = [
   {
@@ -82,28 +83,67 @@ describe("MuseumList component", () => {
     return mount(<MockedProvider mocks={mocks}>{element}</MockedProvider>);
   }
 
-  it("Renders initially with a loading indicator.", () => {
-    const wrapper = mountWithContext(<MuseumList query="space" />);
-    expect(
-      toJson(wrapper.find("MuseumListInternal").children())
-    ).toMatchSnapshot();
+  it("Renders initially with a loading indicator.", async () => {
+    const wrapper = mountWithContext(
+      <MuseumList {...DEFAULT_PROPS} query="space" />
+    );
+    expect(wrapper.find(".list-group").text()).toEqual("Loading...");
   });
 
   it("Renders the museum list.", async () => {
-    const wrapper = mountWithContext(<MuseumList query="space" />);
+    const wrapper = mountWithContext(
+      <MuseumList {...DEFAULT_PROPS} query="space" />
+    );
     await wait(0);
     wrapper.update();
     expect(
-      toJson(wrapper.find("MuseumListInternal").children())
-    ).toMatchSnapshot();
+      wrapper
+        .find("li strong")
+        .first()
+        .text()
+    ).toEqual("SPACE GALLERY");
+    expect(
+      wrapper
+        .find("li strong")
+        .at(1)
+        .text()
+    ).toEqual("SPACE GALLERY");
+    expect(
+      wrapper
+        .find("li strong")
+        .at(2)
+        .text()
+    ).toEqual("SPACE MUSEUM");
   });
 
   it("Renders an error.", async () => {
-    const wrapper = mountWithContext(<MuseumList query="Give me an error!" />);
+    const wrapper = mountWithContext(
+      <MuseumList {...DEFAULT_PROPS} query="Give me an error!" />
+    );
     await wait(2);
     wrapper.update();
-    expect(
-      toJson(wrapper.find("MuseumListInternal").children())
-    ).toMatchSnapshot();
+    expect(wrapper.find(".alert.alert-danger").text()).toEqual(
+      "Network error: An error happened!"
+    );
+  });
+
+  it("Calls a callback prop when a list item is mouse-hovered.", async () => {
+    const mockOnHover = jest.fn();
+
+    const wrapper = mountWithContext(
+      <MuseumList onItemHover={mockOnHover} query="space" />
+    );
+    await wait(2);
+    wrapper.update();
+
+    const li = wrapper.find("li").first();
+
+    li.props().onMouseEnter(null);
+    expect(mockOnHover).lastCalledWith(
+      expect.objectContaining({ name: "SPACE GALLERY" })
+    );
+
+    li.props().onMouseLeave(null);
+    expect(mockOnHover).lastCalledWith(null);
   });
 });

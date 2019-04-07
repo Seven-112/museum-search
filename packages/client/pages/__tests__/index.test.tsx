@@ -135,4 +135,30 @@ describe("MuseumSearchPage component", () => {
       "overflow-y: scroll; height: 499px;"
     );
   });
+
+  it("Passes a museum to the map to be highlighted when a museum in the list is hovered.", () => {
+    const mockRouter = {
+      query: {}
+    };
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={mockRouter as any} />
+      </MockedProvider>
+    );
+
+    const testMuseum = {};
+
+    act(() => {
+      wrapper
+        .find(MuseumList)
+        .props()
+        .onItemHover(testMuseum);
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find("LoadableComponent").prop("highlightedMuseum")).toBe(
+      testMuseum
+    );
+  });
 });

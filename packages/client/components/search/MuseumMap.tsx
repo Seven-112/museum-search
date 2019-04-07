@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { divIcon, LeafletEvent, point } from "leaflet";
+import { divIcon, LatLngTuple, LeafletEvent, point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React from "react";
 import { graphql } from "react-apollo";
@@ -13,6 +13,7 @@ export interface IMuseumMapProps {
   query?: string;
   boundingBox?: object;
   onMove?: MoveHandler;
+  highlightedMuseum?: any;
 }
 
 /** MuseumMap query response. */
@@ -25,6 +26,11 @@ interface IMuseumMapVariables {
   query?: string;
   boundingBox?: object;
 }
+
+// tslint:disable-next-line: no-var-requires
+const BLUE_MARKER_IMG = require("leaflet/dist/images/marker-icon.png");
+// tslint:disable-next-line: no-var-requires
+const RED_MARKER_IMG = require("../../img/marker-icon-red.png");
 
 /** MuseumMapObjects query. */
 export const GET_MUSEUM_MAP_OBJECTS = gql`
@@ -68,12 +74,12 @@ const withMuseumMapObjects = graphql<
   })
 });
 
-function museumMarkerIcon(museum: any) {
+function museumMarkerIcon(museum: any, img: any) {
   return divIcon({
     className: "museum-marker",
     html: `
       <div style="width: 300px">
-        <img src="${require("leaflet/dist/images/marker-icon.png")}">
+        <img src="${img}">
         <div><span>${museum.name}</span></div>
       </div>
     `,
@@ -93,11 +99,28 @@ function bucketMarkerIcon(count: number): any {
   });
 }
 
+function redHighlightMarker(museum?: any) {
+  if (museum) {
+    const position: LatLngTuple = [museum.latitude, museum.longitude];
+
+    return (
+      <Marker
+        position={position}
+        icon={museumMarkerIcon(museum, RED_MARKER_IMG)}
+      />
+    );
+  }
+  return null;
+}
+
 /** MuseumMap component. */
 export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
   data: { museumMapObjects },
+  highlightedMuseum,
   onMove
 }) {
+  const highlightMarker = redHighlightMarker(highlightedMuseum);
+
   return (
     <Map
       onmove={onMove}
@@ -110,27 +133,48 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
         noWrap={true}
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {museumMapObjects &&
-        museumMapObjects.edges.map(edge => {
-          switch (edge.__typename) {
-            case "GeoPointBucketEdge":
-              return (
-                <Marker
-                  key={`bucket_${edge.node.geoHashKey}`}
-                  position={[edge.node.latitude, edge.node.longitude]}
-                  icon={bucketMarkerIcon(edge.node.count)}
-                />
-              );
-            case "MuseumSearchEdge":
-              return (
-                <Marker
-                  key={`museum_${edge.node.id}`}
-                  position={[edge.node.latitude, edge.node.longitude]}
-                  icon={museumMarkerIcon(edge.node)}
-                />
-              );
-          }
-        })}
+      <MarkerGroup museumMapObjects={museumMapObjects} />
+      {highlightMarker}
     </Map>
   );
 });
+
+/**
+ * Marker group component that only re-renders when the passed list of museums changes.
+ */
+class MarkerGroup extends React.Component<IMuseumMapResponse> {
+  public render() {
+    const { museumMapObjects } = this.props;
+
+    return (
+      <div>
+        {museumMapObjects &&
+          museumMapObjects.edges.map(edge => {
+            switch (edge.__typename) {
+              case "GeoPointBucketEdge":
+                return (
+                  <Marker
+                    key={`bucket_${edge.node.geoHashKey}`}
+                    position={[edge.node.latitude, edge.node.longitude]}
+                    icon={bucketMarkerIcon(edge.node.count)}
+                  />
+                );
+              case "MuseumSearchEdge":
+                return (
+                  <Marker
+                    key={`museum_${edge.node.id}`}
+                    position={[edge.node.latitude, edge.node.longitude]}
+                    icon={museumMarkerIcon(edge.node, BLUE_MARKER_IMG)}
+                  />
+                );
+            }
+          })}
+      </div>
+    );
+  }
+
+  public shouldComponentUpdate({ museumMapObjects }: IMuseumMapResponse) {
+    // Only render if the museum list is different.
+    return museumMapObjects !== this.props.museumMapObjects;
+  }
+}

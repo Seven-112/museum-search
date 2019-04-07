@@ -1,11 +1,10 @@
 /* Museum marker styles: */
-.museum-marker {
+.museum-marker label {
   color: black;
-  text-shadow:
-    -2px -2px 0 white,
-    2px -2px 0 white,
-    -2px 2px 0 white,
-    2px 2px 0 white;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 2px;
 }
 
 /* Marker cluster styles: */

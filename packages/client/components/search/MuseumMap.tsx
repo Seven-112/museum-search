@@ -80,7 +80,7 @@ function museumMarkerIcon(museum: any, img: any) {
     html: `
       <div style="width: 300px">
         <img src="${img}">
-        <div><span>${museum.name}</span></div>
+        <div><label>${museum.name}</label></div>
       </div>
     `,
     iconAnchor: [13, 40],

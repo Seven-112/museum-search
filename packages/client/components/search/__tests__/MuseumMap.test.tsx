@@ -138,4 +138,19 @@ describe("MuseumMap component", () => {
 
     expect(onMove).lastCalledWith(mockEvent);
   });
+
+  it("Provides a highlightedMarker prop to show a highlighted marker.", () => {
+    const wrapper = mountWithContext(
+      <MuseumMap
+        highlightedMuseum={mocks[0].result.data.museumMapObjects.edges[2].node}
+      />
+    );
+
+    expect(wrapper.find(Marker).props()).toEqual(
+      objectContaining({
+        icon: anything(),
+        position: [28.17638, -80.67145]
+      })
+    );
+  });
 });

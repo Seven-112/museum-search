@@ -2,7 +2,8 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
 /** MuseumList component props. */
-interface IMuseumListProps {
+export interface IMuseumListProps {
+  onItemHover: (hoveredItem: object) => void;
   query?: string;
 }
 
@@ -51,15 +52,26 @@ const withMuseumList = graphql<
 
 /** MuseumList component. */
 export const MuseumList = withMuseumList(function MuseumListInternal({
-  data: { loading, error, museums }
+  data: { loading, error, museums },
+  onItemHover
 }) {
   return (
     <ul className="list-group">
+      <style jsx={true}>{`
+        .list-group-item:hover {
+          border: 3px solid red;
+        }
+      `}</style>
       {loading && "Loading..."}
       {error && <div className="alert alert-danger">{error.message}</div>}
       {museums &&
         museums.edges.map(edge => (
-          <li key={edge.node.id} className="list-group-item">
+          <li
+            key={edge.node.id}
+            className="list-group-item"
+            onMouseEnter={() => onItemHover(edge.node)}
+            onMouseLeave={() => onItemHover(null)}
+          >
             <strong>{edge.node.name}</strong>
             <div>{edge.node.streetAddress}</div>
             <div>

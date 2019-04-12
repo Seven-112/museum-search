@@ -1,4 +1,5 @@
 import { Client } from "elasticsearch";
+import { chunk } from "lodash";
 import { db } from "../sequelize/models";
 
 /**
@@ -39,24 +40,29 @@ export async function buildMuseumsIndex() {
   const museums = await db.Museum.findAll().map(data => data.toJSON());
   console.log(`Found ${museums.length} museums in DB`);
 
-  const indexBody: any[] = [];
-  museums.forEach(museum => {
-    indexBody.push({
-      index: { _index: "museums", _type: "museum", _id: museum.id }
-    });
-    indexBody.push({
-      ...museum,
-      location: { lat: museum.latitude, lon: museum.longitude }
-    });
-  });
+  // Index 1000 museums at a time to avoid elasticsearch timeouts and packet size limits.
+  const museumChunks = chunk(museums, 1000);
 
-  if (indexBody.length) {
-    console.log("Indexing museum data...");
-    await esClient.bulk({
-      body: indexBody
+  console.log("Indexing museum data...");
+  for (const museumChunk of museumChunks) {
+    const indexBody: any[] = [];
+    museumChunk.forEach(museum => {
+      indexBody.push({
+        index: { _index: "museums", _type: "museum", _id: museum.id }
+      });
+      indexBody.push({
+        ...museum,
+        location: { lat: museum.latitude, lon: museum.longitude }
+      });
     });
-    console.log("Museum data indexed.");
+
+    if (indexBody.length) {
+      await esClient.bulk({
+        body: indexBody
+      });
+    }
   }
+  console.log("Museum data indexed.");
 
   esClient.close();
   db.sequelize.close();

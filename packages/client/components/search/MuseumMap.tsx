@@ -5,6 +5,7 @@ import React from "react";
 import { graphql } from "react-apollo";
 import { Map, Marker, TileLayer } from "react-leaflet";
 import "../../style/MuseumMap.css";
+import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 
 export type MoveHandler = (e: LeafletEvent) => void;
 
@@ -115,27 +116,32 @@ function redHighlightMarker(museum?: any) {
 
 /** MuseumMap component. */
 export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
-  data: { museumMapObjects },
+  data: { loading, museumMapObjects },
   highlightedMuseum,
   onMove
 }) {
   const highlightMarker = redHighlightMarker(highlightedMuseum);
 
   return (
-    <Map
-      onmove={onMove}
-      center={[38.810338, -98.323266]}
-      zoom={4}
-      className="h-100"
-    >
-      <TileLayer
-        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        noWrap={true}
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <MarkerGroup museumMapObjects={museumMapObjects} />
-      {highlightMarker}
-    </Map>
+    <div className="h-100">
+      <div style={{ zIndex: 500 }} className="position-absolute w-100">
+        <LoadingSpinner loading={loading} />
+      </div>
+      <Map
+        onmove={onMove}
+        center={[38.810338, -98.323266]}
+        zoom={4}
+        className="h-100"
+      >
+        <TileLayer
+          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          noWrap={true}
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MarkerGroup museumMapObjects={museumMapObjects} />
+        {highlightMarker}
+      </Map>
+    </div>
   );
 });
 

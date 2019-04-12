@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 
 /** MuseumList component props. */
 export interface IMuseumListProps {
@@ -62,7 +63,7 @@ export const MuseumList = withMuseumList(function MuseumListInternal({
           border: 3px solid red;
         }
       `}</style>
-      {loading && "Loading..."}
+      <LoadingSpinner loading={loading} />
       {error && <div className="alert alert-danger">{error.message}</div>}
       {museums &&
         museums.edges.map(edge => (

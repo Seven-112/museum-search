@@ -81,6 +81,7 @@ jest.mock("elasticsearch", () => ({
       expect(params.body).toEqual({
         query: {
           multi_match: {
+            operator: "and",
             query: "space museum"
           }
         }

@@ -80,6 +80,7 @@ async function getMuseumBuckets({
           must: query
             ? {
                 multi_match: {
+                  operator: "and",
                   query
                 }
               }
@@ -175,6 +176,7 @@ async function getMuseumHits({
           must: query
             ? {
                 multi_match: {
+                  operator: "and",
                   query
                 }
               }

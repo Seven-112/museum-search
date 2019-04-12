@@ -38,6 +38,7 @@ Array [
           },
           "must": Object {
             "multi_match": Object {
+              "operator": "and",
               "query": "museum",
             },
           },
@@ -59,6 +60,7 @@ Array [
           "minimum_should_match": 1,
           "must": Object {
             "multi_match": Object {
+              "operator": "and",
               "query": "museum",
             },
           },

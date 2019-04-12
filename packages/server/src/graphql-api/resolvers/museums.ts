@@ -9,7 +9,10 @@ export const museums: IFieldResolver<{}, IResolverContext> = async (
   const { hits } = await esClient.search({
     body: {
       query: {
-        multi_match: { query }
+        multi_match: {
+          operator: "and",
+          query
+        }
       }
     },
     index: "museums",

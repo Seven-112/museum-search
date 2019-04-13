@@ -16,7 +16,7 @@ module.exports = {
   },
   setupFiles: ["<rootDir>/jest.setup.js"],
   snapshotSerializers: ["enzyme-to-json/serializer"],
-  testPathIgnorePatterns: ["/.next/", "/build/", "/node_modules/"],
+  testPathIgnorePatterns: ["/.next/", "/node_modules/"],
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|js?|tsx?|ts?)$",
   transform: {
     "^.+\\.tsx?$": "babel-jest"

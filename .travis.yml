@@ -35,5 +35,5 @@ deploy:
   provider: script
   script: bash docker-push.sh
   on:
-    branch: travis-docker-push
+    branch: master
     tags: true

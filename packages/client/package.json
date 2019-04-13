@@ -9,8 +9,8 @@
     "next": "next",
     "dev": "run-p next proxy",
     "proxy": "micro-proxy -r ./dev-proxy-config.json -p 9000",
-    "build": "next build",
-    "start": "next start"
+    "build": "next build && next export -o ./build",
+    "start": "http-server -p 3000 ./build"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",

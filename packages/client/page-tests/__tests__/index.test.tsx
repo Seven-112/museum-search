@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { MockedProvider } from "react-apollo/test-utils";
 import { act } from "react-dom/test-utils";
 import { MuseumList } from "../../components/search/MuseumList";
-import { MuseumSearchPage } from "../index";
+import { MuseumSearchPage } from "../../pages/index";
 
 describe("MuseumSearchPage component", () => {
   it("Renders the museum search page.", () => {

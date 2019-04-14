@@ -5,7 +5,11 @@ import { withRouter, WithRouterProps } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { Head } from "../components/Head";
 import { MuseumList } from "../components/search/MuseumList";
-import { IMuseumMapProps, MoveHandler } from "../components/search/MuseumMap";
+import {
+  IBoundingBox,
+  IMuseumMapProps,
+  MoveHandler
+} from "../components/search/MuseumMap";
 
 interface IMuseumSearchPageQuery {
   q?: string;
@@ -36,23 +40,10 @@ export function MuseumSearchPage({
 }: WithRouterProps<IMuseumSearchPageQuery>) {
   const listContainer = useRef<HTMLDivElement>();
 
-  const [boundingBox, setBoundingBox] = useState<object>();
+  const [boundingBox, setBoundingBox] = useState<IBoundingBox>();
   const [highlightedMuseum, setHighlightedMuseum] = useState<object>();
 
-  function onListItemHover(museum: object) {
-    setHighlightedMuseum(museum);
-  }
-
-  const onMapMove = debounce<MoveHandler>(event => {
-    const box = event.target.getBounds();
-
-    setBoundingBox({
-      bottom: box.getSouth(),
-      left: box.getWest(),
-      right: box.getEast(),
-      top: box.getNorth()
-    });
-  }, 200);
+  const onMapMove = debounce<MoveHandler>(setBoundingBox, 200);
 
   function search({ q }: IMuseumSearchPageQuery) {
     router.push({
@@ -104,7 +95,7 @@ export function MuseumSearchPage({
             style={{ overflowY: "scroll" }}
           >
             <MuseumList
-              onItemHover={onListItemHover}
+              onItemHover={setHighlightedMuseum}
               query={router.query.q || "museum"}
             />
           </div>

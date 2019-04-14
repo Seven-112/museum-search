@@ -133,10 +133,52 @@ describe("MuseumMap component", () => {
     wrapper.update();
 
     // Simulate a map move.
-    const mockEvent = {};
+    const mockEvent = {
+      target: {
+        getBounds() {
+          return {
+            getEast: () => 4,
+            getNorth: () => 1,
+            getSouth: () => 3,
+            getWest: () => 2
+          };
+        }
+      }
+    };
     wrapper.find(Map).prop("onmove")(mockEvent);
 
-    expect(onMove).lastCalledWith(mockEvent);
+    expect(onMove).lastCalledWith({
+      bottom: 3,
+      left: 2,
+      right: 4,
+      top: 1
+    });
+  });
+
+  it("Provides an optional onMove callback prop.", async () => {
+    // Pass an undefined onMove prop.
+    const wrapper = mountWithContext(
+      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} onMove={undefined} />
+    );
+    await wait(0);
+    wrapper.update();
+
+    // Simulate a map move.
+    const mockEvent = {
+      target: {
+        getBounds() {
+          return {
+            getEast: () => 4,
+            getNorth: () => 1,
+            getSouth: () => 3,
+            getWest: () => 2
+          };
+        }
+      }
+    };
+    wrapper.find(Map).prop("onmove")(mockEvent);
+
+    // Nothing should happen.
   });
 
   it("Provides a highlightedMarker prop to show a highlighted marker.", () => {
@@ -152,5 +194,59 @@ describe("MuseumMap component", () => {
         position: [28.17638, -80.67145]
       })
     );
+  });
+
+  it("Clamps lat/lon values to min/max.", async () => {
+    const onMove = jest.fn();
+
+    const wrapper = mountWithContext(
+      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} onMove={onMove} />
+    );
+    await wait(0);
+    wrapper.update();
+
+    // Simulate a map move with under min values.
+    const mockEvent1 = {
+      target: {
+        getBounds() {
+          return {
+            getEast: () => -1000,
+            getNorth: () => -1000,
+            getSouth: () => -1000,
+            getWest: () => -1000
+          };
+        }
+      }
+    };
+    wrapper.find(Map).prop("onmove")(mockEvent1);
+
+    expect(onMove).lastCalledWith({
+      bottom: -90,
+      left: -180,
+      right: -180,
+      top: -90
+    });
+
+    // Simulate a map move with over max values.
+    const mockEvent2 = {
+      target: {
+        getBounds() {
+          return {
+            getEast: () => 500,
+            getNorth: () => 500,
+            getSouth: () => 500,
+            getWest: () => 500
+          };
+        }
+      }
+    };
+    wrapper.find(Map).prop("onmove")(mockEvent2);
+
+    expect(onMove).lastCalledWith({
+      bottom: 90,
+      left: 180,
+      right: 180,
+      top: 90
+    });
   });
 });

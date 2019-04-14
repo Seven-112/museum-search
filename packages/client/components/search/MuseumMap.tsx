@@ -1,13 +1,14 @@
 import gql from "graphql-tag";
-import { divIcon, LatLngTuple, LeafletEvent, point } from "leaflet";
+import { divIcon, LatLngTuple, point } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { clamp } from "lodash";
 import React from "react";
 import { graphql } from "react-apollo";
 import { Map, Marker, TileLayer } from "react-leaflet";
 import "../../style/MuseumMap.css";
 import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 
-export type MoveHandler = (e: LeafletEvent) => void;
+export type MoveHandler = (box: IBoundingBox) => void;
 
 /** MuseumMap component props. */
 export interface IMuseumMapProps {
@@ -26,6 +27,13 @@ interface IMuseumMapResponse {
 interface IMuseumMapVariables {
   query?: string;
   boundingBox?: object;
+}
+
+export interface IBoundingBox {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
 }
 
 // tslint:disable-next-line: no-var-requires
@@ -122,13 +130,30 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
 }) {
   const highlightMarker = redHighlightMarker(highlightedMuseum);
 
+  function onMoveInternal(event) {
+    if (!onMove) {
+      return;
+    }
+
+    const leafletBox = event.target.getBounds();
+
+    const boundingBox: IBoundingBox = {
+      bottom: clamp(leafletBox.getSouth(), -90, 90),
+      left: clamp(leafletBox.getWest(), -180, 180),
+      right: clamp(leafletBox.getEast(), -180, 180),
+      top: clamp(leafletBox.getNorth(), -90, 90)
+    };
+
+    onMove(boundingBox);
+  }
+
   return (
     <div className="h-100">
       <div style={{ zIndex: 500 }} className="position-absolute w-100">
         <LoadingSpinner loading={loading} />
       </div>
       <Map
-        onmove={onMove}
+        onmove={onMoveInternal}
         center={[38.810338, -98.323266]}
         zoom={4}
         className="h-100"

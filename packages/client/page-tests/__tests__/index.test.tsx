@@ -4,6 +4,7 @@ import { MockedProvider } from "react-apollo/test-utils";
 import { act } from "react-dom/test-utils";
 import { MuseumList } from "../../components/search/MuseumList";
 import { MuseumSearchPage } from "../../pages/index";
+import { MoveHandler } from "../../components/search/MuseumMap";
 
 describe("MuseumSearchPage component", () => {
   it("Renders the museum search page.", () => {
@@ -68,17 +69,11 @@ describe("MuseumSearchPage component", () => {
 
     act(() => {
       // The MuseumMap is loaded dynamically, so it is selected as "LoadableComponent".
-      (wrapper.find("LoadableComponent").prop("onMove") as any)({
-        target: {
-          getBounds() {
-            return {
-              getEast: () => 4,
-              getNorth: () => 1,
-              getSouth: () => 3,
-              getWest: () => 2
-            };
-          }
-        }
+      (wrapper.find("LoadableComponent").prop("onMove") as MoveHandler)({
+        bottom: 3,
+        left: 2,
+        right: 4,
+        top: 1
       });
     });
 

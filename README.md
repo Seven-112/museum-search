@@ -49,4 +49,4 @@ Go to \<dockerhost\> in your browser, where \<dockerhost\> is the host IP runnin
 
 ## Access the GraphQL Playground UI:
 
-Go to <dockerhost>:4000 in your browser, where <dockerhost> is the host IP running docker. This could be localhost, or 192.168.99.100 for docker-machine on Windows.
+Go to \<dockerhost\>:4000 in your browser, where \<dockerhost\> is the host IP running docker. This could be localhost, or 192.168.99.100 for docker-machine on Windows.

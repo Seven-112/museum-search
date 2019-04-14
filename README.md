@@ -5,11 +5,19 @@
 
 Multi-container application providing a UI and GraphQL API to search museum names and locations.
 
-You can filter the search results in the list and map UI using a keyword search. You can zoom
+You can filter the search results in the list and map UI using a keyword search. Zoom
 in on the map to get museum counts by more precise areas and see labeled pins on the map for
 individual museums.
 
 ![Screenshot](/docs/screenshot.png)
+
+## Stack
+
+This application runs on a multi-container stack including:
+
+* Front-end: My TypeScript/React application with a list+map UI using [react-apollo](https://github.com/apollographql/react-apollo) to query the back-end.
+* Back-end: My TypeScript/Node.js application using [apollo-server](https://github.com/apollographql/apollo-server) to provide a GraphQL API for searching museums.
+* ElasticSearch: A third-party search engine I use to search+filter museums by keyword and geospatial criteria.
 
 ## To launch:
 
@@ -35,10 +43,6 @@ docker-compose run -e MUSEUMS_CSV=/data/museums.csv museum-api-migrate
 
 - Note: The "/data/museums.csv" in this command refers to a path inside the museum-api-migrate container, but the "data" directory in this path is a volume that links to this repo's "data" directory. This is how the museum-api-migrate container can read the csv file that is pasted into this repo's data directory.
 
-## Front-end application:
+## Access the front-end application:
 
 Go to \<dockerhost\> in your browser, where \<dockerhost\> is the host IP running docker. This could be localhost, or 192.168.99.100 for docker-machine on Windows.
-
-## GraphQL Playground UI:
-
-Go to \<dockerhost\>:4000 in your browser, where \<dockerhost\> is the host IP running docker. This could be localhost, or 192.168.99.100 for docker-machine on Windows.

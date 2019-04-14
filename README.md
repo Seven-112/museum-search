@@ -19,6 +19,17 @@ This application runs on a multi-container stack including:
 * Back-end: My TypeScript/Node.js application using [apollo-server](https://github.com/apollographql/apollo-server) to provide a GraphQL API for searching museums.
 * ElasticSearch: A third-party search engine I use to search+filter museums by keyword and geospatial criteria.
 
+## Continuous Integration / Continuous Delivery
+
+This repo uses Travis for continuous integration.
+
+On every commit and pull request, Travis runs the test suite, and reports success/failure and test
+coverage. It sends the test reports to CodeClimate, which provides code quality analysis and test
+coverage reports.
+
+On every tagged commit to master, Travis builds and pushes the API and client docker images to
+Docker Hub with the Git tag as the Docker tag.
+
 ## To launch:
 
 From this repo's top directory, run:

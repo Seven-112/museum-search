@@ -30,9 +30,9 @@ coverage reports.
 On every tagged commit to master, Travis builds and pushes the API and client docker images to
 Docker Hub with the Git tag as the Docker tag.
 
-[API Docker image](https://cloud.docker.com/repository/docker/poffm/museum-search-server)
+[API Docker image](https://hub.docker.com/r/poffm/museum-search-server)
 
-[Client Docker image](https://cloud.docker.com/repository/docker/poffm/museum-search-client)
+[Client Docker image](https://hub.docker.com/r/poffm/museum-search-client)
 
 ## To launch:
 

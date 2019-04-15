@@ -57,6 +57,16 @@ Array [
     "body": Object {
       "query": Object {
         "bool": Object {
+          "filter": Object {
+            "geo_bounding_box": Object {
+              "location": Object {
+                "bottom": -0.7031073524364783,
+                "left": -150.20489340321566,
+                "right": -45.61504965321564,
+                "top": 65.14611484756375,
+              },
+            },
+          },
           "minimum_should_match": 1,
           "must": Object {
             "multi_match": Object {
@@ -177,6 +187,7 @@ Array [
     "body": Object {
       "query": Object {
         "bool": Object {
+          "filter": undefined,
           "minimum_should_match": 1,
           "must": undefined,
           "should": Array [

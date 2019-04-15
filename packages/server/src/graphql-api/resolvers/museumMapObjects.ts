@@ -22,6 +22,7 @@ export const museumMapObjects: IFieldResolver<{}, IResolverContext> = async (
   });
 
   const museumHits = await getMuseumHits({
+    boundingBox,
     boundingBoxesToUnpack,
     esClient,
     query
@@ -156,10 +157,12 @@ function getBoundingBoxesToUnpack({
 }
 
 async function getMuseumHits({
+  boundingBox,
   esClient,
   query,
   boundingBoxesToUnpack
 }: {
+  boundingBox: object;
   esClient: Client;
   query?: string;
   boundingBoxesToUnpack: any[];
@@ -172,6 +175,13 @@ async function getMuseumHits({
     body: {
       query: {
         bool: {
+          filter: boundingBox
+            ? {
+                geo_bounding_box: {
+                  location: boundingBox
+                }
+              }
+            : undefined,
           minimum_should_match: 1,
           must: query
             ? {

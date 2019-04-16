@@ -1,6 +1,6 @@
 {
   "name": "museum-search-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "scripts": {
     "lint": "tslint --project tsconfig.json",

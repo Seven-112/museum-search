@@ -249,4 +249,17 @@ describe("MuseumMap component", () => {
       top: 90
     });
   });
+
+  it("Provides a leaflet map ref.", () => {
+    const refWrapper: { leafletMapRef: Map } = { leafletMapRef: null };
+
+    mountWithContext(
+      <MuseumMap
+        {...FLORIDA_SPACE_MUSEUM_VARIABLES}
+        leafletMapRef={node => (refWrapper.leafletMapRef = node)}
+      />
+    );
+
+    expect(refWrapper.leafletMapRef.leafletElement).toBeTruthy();
+  });
 });

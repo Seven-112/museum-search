@@ -2,18 +2,22 @@ import { mount } from "enzyme";
 import { Formik } from "formik";
 import { MockedProvider } from "react-apollo/test-utils";
 import { act } from "react-dom/test-utils";
+import { Map } from "react-leaflet";
 import { MuseumList } from "../../components/search/MuseumList";
+import { MuseumMap } from "../../components/search/MuseumMap";
 import { MuseumSearchPage } from "../../pages/index";
-import { MoveHandler } from "../../components/search/MuseumMap";
+
+jest.mock("next/dynamic", () => () =>
+  require("../../components/search/MuseumMap").MuseumMap
+);
+
+const MOCK_ROUTER = { query: {} } as any;
 
 describe("MuseumSearchPage component", () => {
   it("Renders the museum search page.", () => {
-    const mockRouter = {
-      query: {}
-    };
     const wrapper = mount(
       <MockedProvider>
-        <MuseumSearchPage router={mockRouter as any} />
+        <MuseumSearchPage router={MOCK_ROUTER} />
       </MockedProvider>
     );
 
@@ -27,8 +31,7 @@ describe("MuseumSearchPage component", () => {
     );
     // Has the museum list.
     expect(wrapper.find(MuseumList).exists()).toEqual(true);
-    // Has the museum map, which is loaded dynamically, so it is selected as "LoadableComponent".
-    expect(wrapper.find("LoadableComponent").exists()).toEqual(true);
+    expect(wrapper.find(MuseumMap).exists()).toEqual(true);
   });
 
   it("Performs a search using the search input.", () => {
@@ -58,18 +61,14 @@ describe("MuseumSearchPage component", () => {
     // Un-debounce the onMapMove function for this test.
     jest.spyOn(require("lodash"), "debounce").mockImplementationOnce(fn => fn);
 
-    const mockRouter = {
-      query: {}
-    };
     const wrapper = mount(
       <MockedProvider>
-        <MuseumSearchPage router={mockRouter as any} />
+        <MuseumSearchPage router={MOCK_ROUTER} />
       </MockedProvider>
     );
 
     act(() => {
-      // The MuseumMap is loaded dynamically, so it is selected as "LoadableComponent".
-      (wrapper.find("LoadableComponent").prop("onMove") as MoveHandler)({
+      wrapper.find(MuseumMap).prop("onMove")({
         bottom: 3,
         left: 2,
         right: 4,
@@ -79,7 +78,7 @@ describe("MuseumSearchPage component", () => {
 
     wrapper.update();
 
-    expect(wrapper.find("LoadableComponent").prop("boundingBox")).toEqual({
+    expect(wrapper.find(MuseumMap).prop("boundingBox")).toEqual({
       bottom: 3,
       left: 2,
       right: 4,
@@ -98,19 +97,14 @@ describe("MuseumSearchPage component", () => {
     );
 
     expect(wrapper.find(MuseumList).prop("query")).toEqual("zoo");
-
-    // The MuseumMap loaded dynamically, so it is selected as "LoadableComponent".
-    expect(wrapper.find("LoadableComponent").prop("query")).toEqual("zoo");
+    expect(wrapper.find(MuseumMap).prop("query")).toEqual("zoo");
   });
 
   it("Resizes the list container after the page mounts and after the window resizes.", () => {
     (window.innerHeight as any) = 768;
-    const mockRouter = {
-      query: {}
-    };
     const wrapper = mount(
       <MockedProvider>
-        <MuseumSearchPage router={mockRouter as any} />
+        <MuseumSearchPage router={MOCK_ROUTER} />
       </MockedProvider>
     );
 
@@ -132,17 +126,15 @@ describe("MuseumSearchPage component", () => {
   });
 
   it("Passes a museum to the map to be highlighted when a museum in the list is hovered.", () => {
-    const mockRouter = {
-      query: {}
-    };
     const wrapper = mount(
       <MockedProvider>
-        <MuseumSearchPage router={mockRouter as any} />
+        <MuseumSearchPage router={MOCK_ROUTER} />
       </MockedProvider>
     );
 
-    const testMuseum = {};
+    const testMuseum = { latitude: 37.750982, longitude: -85.363281 };
 
+    // Hover a list item.
     act(() => {
       wrapper
         .find(MuseumList)
@@ -152,8 +144,33 @@ describe("MuseumSearchPage component", () => {
 
     wrapper.update();
 
-    expect(wrapper.find("LoadableComponent").prop("highlightedMuseum")).toBe(
-      testMuseum
+    expect(wrapper.find(MuseumMap).prop("highlightedMuseum")).toBe(testMuseum);
+  });
+
+  it("Flies to a museum on the map when the museum's list item is clicked.", () => {
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={MOCK_ROUTER} />
+      </MockedProvider>
     );
+
+    const leafletMapRef: React.MutableRefObject<Map> = wrapper
+      .find(MuseumMap)
+      .prop("leafletMapRef") as React.MutableRefObject<Map>;
+
+    // Spy on leaflet's flyTo function.
+    const flyToSpy = jest.spyOn(leafletMapRef.current.leafletElement, "flyTo");
+
+    const testMuseum = { latitude: 37.750982, longitude: -85.363281 };
+
+    // Click a list item.
+    act(() => {
+      wrapper
+        .find(MuseumList)
+        .props()
+        .onItemClick(testMuseum);
+    });
+
+    expect(flyToSpy).lastCalledWith([37.750982, -85.363281], 15);
   });
 });

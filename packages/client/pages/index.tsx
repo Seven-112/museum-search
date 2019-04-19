@@ -2,7 +2,8 @@ import { Field, Form, Formik } from "formik";
 import { debounce } from "lodash";
 import dynamic from "next/dynamic";
 import { withRouter, WithRouterProps } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Map } from "react-leaflet";
 import { Head } from "../components/Head";
 import { MuseumList } from "../components/search/MuseumList";
 import {
@@ -39,17 +40,27 @@ export function MuseumSearchPage({
   router
 }: WithRouterProps<IMuseumSearchPageQuery>) {
   const listContainer = useRef<HTMLDivElement>();
+  const leafletMap = useRef<Map>();
 
   const [boundingBox, setBoundingBox] = useState<IBoundingBox>();
   const [highlightedMuseum, setHighlightedMuseum] = useState<object>();
 
-  const onMapMove = debounce<MoveHandler>(setBoundingBox, 200);
+  // Memoize the debounced mapMove so that the debounce timeout is carried over on re-renders.
+  // Re-rendering should not reset the debounce timeout.
+  const onMapMove = useMemo(
+    () => debounce<MoveHandler>(setBoundingBox, 200),
+    []
+  );
 
   function search({ q }: IMuseumSearchPageQuery) {
     router.push({
       pathname: "/",
       query: { q }
     });
+  }
+
+  function flyToMuseum({ latitude, longitude }: any) {
+    leafletMap.current.leafletElement.flyTo([latitude, longitude], 15);
   }
 
   useEffect(() => {
@@ -95,6 +106,7 @@ export function MuseumSearchPage({
             style={{ overflowY: "scroll" }}
           >
             <MuseumList
+              onItemClick={flyToMuseum}
               onItemHover={setHighlightedMuseum}
               query={router.query.q || "museum"}
             />
@@ -104,6 +116,7 @@ export function MuseumSearchPage({
           <MuseumMap
             boundingBox={boundingBox}
             highlightedMuseum={highlightedMuseum}
+            leafletMapRef={leafletMap}
             query={router.query.q}
             onMove={onMapMove}
           />

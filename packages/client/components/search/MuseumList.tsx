@@ -5,6 +5,7 @@ import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 /** MuseumList component props. */
 export interface IMuseumListProps {
   onItemHover: (hoveredItem: object) => void;
+  onItemClick: (hoveredItem: object) => void;
   query?: string;
 }
 
@@ -54,13 +55,15 @@ const withMuseumList = graphql<
 /** MuseumList component. */
 export const MuseumList = withMuseumList(function MuseumListInternal({
   data: { loading, error, museums },
+  onItemClick,
   onItemHover
 }) {
   return (
     <ul className="list-group">
       <style jsx={true}>{`
         .list-group-item:hover {
-          border: 3px solid red;
+          background-color: gainsboro;
+          cursor: pointer;
         }
       `}</style>
       <LoadingSpinner loading={loading} />
@@ -70,6 +73,7 @@ export const MuseumList = withMuseumList(function MuseumListInternal({
           <li
             key={edge.node.id}
             className="list-group-item"
+            onClick={() => onItemClick(edge.node)}
             onMouseEnter={() => onItemHover(edge.node)}
             onMouseLeave={() => onItemHover(null)}
           >

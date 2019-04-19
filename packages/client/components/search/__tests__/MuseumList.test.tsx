@@ -4,7 +4,10 @@ import { GET_MUSEUM_LIST, IMuseumListProps, MuseumList } from "../MuseumList";
 // tslint:disable-next-line: no-var-requires
 const wait = require("waait");
 
-const DEFAULT_PROPS: IMuseumListProps = { onItemHover: () => undefined };
+const DEFAULT_PROPS: IMuseumListProps = {
+  onItemClick: () => undefined,
+  onItemHover: () => undefined
+};
 
 const mocks: MockedResponse[] = [
   {
@@ -127,11 +130,11 @@ describe("MuseumList component", () => {
     );
   });
 
-  it("Calls a callback prop when a list item is mouse-hovered.", async () => {
+  it("Provides an 'onItemHover' callback prop.", async () => {
     const mockOnHover = jest.fn();
 
     const wrapper = mountWithContext(
-      <MuseumList onItemHover={mockOnHover} query="space" />
+      <MuseumList {...DEFAULT_PROPS} onItemHover={mockOnHover} query="space" />
     );
     await wait(2);
     wrapper.update();
@@ -145,5 +148,23 @@ describe("MuseumList component", () => {
 
     li.props().onMouseLeave(null);
     expect(mockOnHover).lastCalledWith(null);
+  });
+
+  it("Provides an 'onItemClick' callback prop.", async () => {
+    const mockOnClick = jest.fn();
+
+    const wrapper = mountWithContext(
+      <MuseumList {...DEFAULT_PROPS} onItemClick={mockOnClick} query="space" />
+    );
+
+    await wait(2);
+    wrapper.update();
+
+    const li = wrapper.find("li").first();
+
+    li.props().onClick(null);
+    expect(mockOnClick).lastCalledWith(
+      expect.objectContaining({ name: "SPACE GALLERY" })
+    );
   });
 });

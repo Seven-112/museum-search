@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import { divIcon, LatLngTuple, point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { clamp } from "lodash";
-import React from "react";
+import React, { Ref } from "react";
 import { graphql } from "react-apollo";
 import { Map, Marker, TileLayer } from "react-leaflet";
 import "../../style/MuseumMap.css";
@@ -14,6 +14,7 @@ export type MoveHandler = (box: IBoundingBox) => void;
 export interface IMuseumMapProps {
   query?: string;
   boundingBox?: object;
+  leafletMapRef?: Ref<Map>;
   onMove?: MoveHandler;
   highlightedMuseum?: any;
 }
@@ -126,6 +127,7 @@ function redHighlightMarker(museum?: any) {
 export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
   data: { loading, museumMapObjects },
   highlightedMuseum,
+  leafletMapRef,
   onMove
 }) {
   const highlightMarker = redHighlightMarker(highlightedMuseum);
@@ -153,10 +155,11 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
         <LoadingSpinner loading={loading} />
       </div>
       <Map
-        onmove={onMoveInternal}
         center={[38.810338, -98.323266]}
-        zoom={4}
         className="h-100"
+        onmove={onMoveInternal}
+        ref={leafletMapRef}
+        zoom={4}
       >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

@@ -10,12 +10,12 @@ import { fragmentTypes } from "../fragmentTypes";
 
 export default class MyApp extends App {
   private client: ApolloClient<{}>;
+  private hasMounted = false;
 
   constructor(props) {
     super(props);
 
     // Apollo needs introspection data about fragment types or else it spams the console with errors.
-    // See: validation and accurate fragment
     const fragmentMatcher = new IntrospectionFragmentMatcher({
       introspectionQueryResultData: fragmentTypes
     });
@@ -23,15 +23,31 @@ export default class MyApp extends App {
     this.client = new ApolloClient({ cache });
   }
 
+  public componentDidMount() {
+    this.hasMounted = true;
+
+    // Reload the page after the App is mounted in the browser, because Next.js does not pass in
+    // the URL query string on the initial browser-side render.
+    // https://github.com/zeit/next.js/issues/2910
+    this.props.router.push(this.props.router.asPath);
+  }
+
   public render() {
     const { Component, pageProps } = this.props;
 
     return (
-      <ApolloProvider client={this.client}>
-        <Container>
-          <Component {...pageProps} />
-        </Container>
-      </ApolloProvider>
+      !this.isFirstBrowserRender() && (
+        <ApolloProvider client={this.client}>
+          <Container>
+            <Component {...pageProps} />
+          </Container>
+        </ApolloProvider>
+      )
     );
+  }
+
+  private isFirstBrowserRender() {
+    const isRunningInBrowser = typeof window !== "undefined";
+    return isRunningInBrowser && !this.hasMounted;
   }
 }

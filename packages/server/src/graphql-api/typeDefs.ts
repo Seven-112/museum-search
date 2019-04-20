@@ -5,7 +5,11 @@ import { gql } from "apollo-server";
  */
 export const typeDefs = gql`
   type Query {
-    museums(query: String, first: Int!): MuseumSearchConnection
+    museums(
+      query: String
+      location: Coordinate
+      first: Int!
+    ): MuseumSearchConnection
     museumMapObjects(
       query: String
       boundingBox: GeoBoundingBoxInput
@@ -36,6 +40,11 @@ export const typeDefs = gql`
   type MuseumSearchConnection {
     edges: [MuseumSearchEdge]
     count: Int
+  }
+
+  input Coordinate {
+    latitude: Float!
+    longitude: Float!
   }
 
   input GeoBoundingBoxInput {

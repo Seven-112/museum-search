@@ -1,11 +1,14 @@
 import { gql } from "apollo-server";
 import { createTestClient } from "apollo-server-testing";
-import { Client, SearchParams, SearchResponse } from "elasticsearch";
+import { Client, SearchResponse } from "elasticsearch";
 import { createServer } from "../../createServer";
 
 const SPACE_MUSEUM_QUERY = gql`
-  {
-    museums(query: "space museum", first: 2) {
+  query spaceMuseumQuery(
+    $query: String = "space museum"
+    $location: Coordinate
+  ) {
+    museums(query: $query, location: $location, first: 2) {
       edges {
         cursor
         node {
@@ -73,28 +76,61 @@ const SPACE_MUSEUM_MOCK_ES_RESPONSE = {
   }
 } as SearchResponse<any>;
 
+const mockSearch = jest.fn(() => SPACE_MUSEUM_MOCK_ES_RESPONSE);
+
 jest.mock("elasticsearch", () => ({
   Client: class {
-    public async search(params: SearchParams) {
-      expect(params.index).toEqual("museums");
-      expect(params.size).toEqual(2);
-      expect(params.body).toEqual({
-        query: {
-          multi_match: {
-            operator: "and",
-            query: "space museum"
-          }
-        }
-      });
-      return SPACE_MUSEUM_MOCK_ES_RESPONSE;
-    }
+    public search = mockSearch;
   }
 }));
 
 const { query } = createTestClient(createServer({ esClient: new Client({}) }));
 
 describe("museums query", () => {
-  it("returns a MuseumConnection", async () => {
-    expect(await query({ query: SPACE_MUSEUM_QUERY })).toMatchSnapshot();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Returns a MuseumSearchConnection", async () => {
+    const result = await query({ query: SPACE_MUSEUM_QUERY });
+    expect(result).toMatchSnapshot();
+
+    expect(mockSearch).lastCalledWith({
+      body: {
+        query: {
+          multi_match: {
+            operator: "and",
+            query: "space museum"
+          }
+        }
+      },
+      index: "museums",
+      size: 2
+    });
+  });
+
+  it("Sends a geo-distance Elasticsearch query when location is specified.", async () => {
+    await query({
+      query: SPACE_MUSEUM_QUERY,
+      variables: {
+        location: { latitude: 39.6902721, longitude: -98.2425472 }
+      }
+    } as any);
+
+    expect(mockSearch).lastCalledWith({
+      body: {
+        query: {
+          multi_match: {
+            operator: "and",
+            query: "space museum"
+          }
+        },
+        sort: [
+          { _geo_distance: { location: { lat: 39.6902721, lon: -98.2425472 } } }
+        ]
+      },
+      index: "museums",
+      size: 2
+    });
   });
 });

@@ -1,5 +1,6 @@
 import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-boost";
 import { mount } from "enzyme";
+import { LatLngExpression } from "leaflet";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
 import { Map, Marker } from "react-leaflet";
 import { fragmentTypes } from "../../../fragmentTypes";
@@ -66,6 +67,11 @@ const mocks: MockedResponse[] = [
   }
 ];
 
+const DEFAULT_PROPS = {
+  ...FLORIDA_SPACE_MUSEUM_VARIABLES,
+  initialCenter: [38.810338, -98.323266] as LatLngExpression
+};
+
 describe("MuseumMap component", () => {
   const { anything, objectContaining } = expect;
 
@@ -87,10 +93,8 @@ describe("MuseumMap component", () => {
   }
 
   it("Renders museum map objects.", async () => {
-    const wrapper = mountWithContext(
-      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} />
-    );
-    await wait(0);
+    const wrapper = mountWithContext(<MuseumMap {...DEFAULT_PROPS} />);
+    await wait(2);
     wrapper.update();
 
     const markers = wrapper.find(Marker);
@@ -127,7 +131,7 @@ describe("MuseumMap component", () => {
     const onMove = jest.fn();
 
     const wrapper = mountWithContext(
-      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} onMove={onMove} />
+      <MuseumMap {...DEFAULT_PROPS} onMove={onMove} />
     );
     await wait(0);
     wrapper.update();
@@ -158,7 +162,7 @@ describe("MuseumMap component", () => {
   it("Provides an optional onMove callback prop.", async () => {
     // Pass an undefined onMove prop.
     const wrapper = mountWithContext(
-      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} onMove={undefined} />
+      <MuseumMap {...DEFAULT_PROPS} onMove={undefined} />
     );
     await wait(0);
     wrapper.update();
@@ -184,6 +188,7 @@ describe("MuseumMap component", () => {
   it("Provides a highlightedMarker prop to show a highlighted marker.", () => {
     const wrapper = mountWithContext(
       <MuseumMap
+        {...DEFAULT_PROPS}
         highlightedMuseum={mocks[0].result.data.museumMapObjects.edges[2].node}
       />
     );
@@ -200,7 +205,7 @@ describe("MuseumMap component", () => {
     const onMove = jest.fn();
 
     const wrapper = mountWithContext(
-      <MuseumMap {...FLORIDA_SPACE_MUSEUM_VARIABLES} onMove={onMove} />
+      <MuseumMap {...DEFAULT_PROPS} onMove={onMove} />
     );
     await wait(0);
     wrapper.update();
@@ -255,11 +260,21 @@ describe("MuseumMap component", () => {
 
     mountWithContext(
       <MuseumMap
-        {...FLORIDA_SPACE_MUSEUM_VARIABLES}
+        {...DEFAULT_PROPS}
         leafletMapRef={node => (refWrapper.leafletMapRef = node)}
       />
     );
 
     expect(refWrapper.leafletMapRef.leafletElement).toBeTruthy();
+  });
+
+  it("Accepts an 'initialCenter' prop to set the initial center of the Leaflet Map.", () => {
+    const initialCenter: LatLngExpression = [41.1235368, -107.2246636];
+
+    const wrapper = mountWithContext(
+      <MuseumMap {...DEFAULT_PROPS} initialCenter={initialCenter} />
+    );
+
+    expect(wrapper.find(Map).prop("center")).toBe(initialCenter);
   });
 });

@@ -9,72 +9,78 @@ const DEFAULT_PROPS: IMuseumListProps = {
   onItemHover: () => undefined
 };
 
-const mocks: MockedResponse[] = [
+const MOCK_QUERY_RESULT = {
+  data: {
+    museums: {
+      __typename: "MuseumSearchConnection",
+      count: 99,
+      edges: [
+        {
+          __typename: "MuseumSearchEdge",
+          cursor: "13911",
+          node: {
+            __typename: "Museum",
+            city: null,
+            id: 13911,
+            latitude: 43.6555,
+            longitude: -70.26151,
+            name: "SPACE GALLERY",
+            state: null,
+            streetAddress: null
+          }
+        },
+        {
+          __typename: "MuseumSearchEdge",
+          cursor: "14897",
+          node: {
+            __typename: "Museum",
+            city: null,
+            id: 14897,
+            latitude: 42.26345,
+            longitude: -85.60829,
+            name: "SPACE GALLERY",
+            state: null,
+            streetAddress: null
+          }
+        },
+        {
+          __typename: "MuseumSearchEdge",
+          cursor: "16357",
+          node: {
+            __typename: "Museum",
+            city: "BONNE TERRE",
+            id: 16357,
+            latitude: 37.92174,
+            longitude: -90.55071,
+            name: "SPACE MUSEUM",
+            state: "MO",
+            streetAddress: "116 E SCHOOL ST"
+          }
+        }
+      ]
+    }
+  }
+};
+
+const DEFAULT_MOCKS: MockedResponse[] = [
+  // Success mock:
   {
     request: {
       query: GET_MUSEUM_LIST,
       variables: {
+        location: undefined,
         query: "space"
       }
     },
-    result: {
-      data: {
-        museums: {
-          __typename: "MuseumSearchConnection",
-          count: 99,
-          edges: [
-            {
-              __typename: "MuseumSearchEdge",
-              cursor: "13911",
-              node: {
-                __typename: "Museum",
-                city: null,
-                id: 13911,
-                latitude: 43.6555,
-                longitude: -70.26151,
-                name: "SPACE GALLERY",
-                state: null,
-                streetAddress: null
-              }
-            },
-            {
-              __typename: "MuseumSearchEdge",
-              cursor: "14897",
-              node: {
-                __typename: "Museum",
-                city: null,
-                id: 14897,
-                latitude: 42.26345,
-                longitude: -85.60829,
-                name: "SPACE GALLERY",
-                state: null,
-                streetAddress: null
-              }
-            },
-            {
-              __typename: "MuseumSearchEdge",
-              cursor: "16357",
-              node: {
-                __typename: "Museum",
-                city: "BONNE TERRE",
-                id: 16357,
-                latitude: 37.92174,
-                longitude: -90.55071,
-                name: "SPACE MUSEUM",
-                state: "MO",
-                streetAddress: "116 E SCHOOL ST"
-              }
-            }
-          ]
-        }
-      }
-    }
+    result: MOCK_QUERY_RESULT
   },
+  // Error mock:
   {
     error: new Error("An error happened!"),
     request: {
       query: GET_MUSEUM_LIST,
       variables: {
+        location: undefined,
         query: "Give me an error!"
       }
     }
@@ -83,7 +89,9 @@ const mocks: MockedResponse[] = [
 
 describe("MuseumList component", () => {
   function mountWithContext(element: JSX.Element) {
-    return mount(<MockedProvider mocks={mocks}>{element}</MockedProvider>);
+    return mount(
+      <MockedProvider mocks={DEFAULT_MOCKS}>{element}</MockedProvider>
+    );
   }
 
   it("Renders initially with a loading indicator.", async () => {
@@ -166,5 +174,41 @@ describe("MuseumList component", () => {
     expect(mockOnClick).lastCalledWith(
       expect.objectContaining({ name: "SPACE GALLERY" })
     );
+  });
+
+  it("Accepts a 'location' prop to sort by geo-distance.", async () => {
+    const mocks: MockedResponse[] = [
+      {
+        request: {
+          query: GET_MUSEUM_LIST,
+          variables: {
+            location: {
+              latitude: 39.6902721,
+              longitude: -98.2425472
+            },
+            query: undefined
+          }
+        },
+        result: MOCK_QUERY_RESULT
+      }
+    ];
+
+    const wrapper = mount(
+      <MockedProvider mocks={mocks}>
+        <MuseumList
+          {...DEFAULT_PROPS}
+          location={{
+            latitude: 39.6902721,
+            longitude: -98.2425472
+          }}
+        />
+      </MockedProvider>
+    );
+
+    await wait(2);
+    wrapper.update();
+
+    // Query should succeed with the location variable included.
+    expect(wrapper.find("li").length).toEqual(3);
   });
 });

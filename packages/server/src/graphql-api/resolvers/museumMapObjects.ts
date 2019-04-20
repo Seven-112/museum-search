@@ -71,21 +71,21 @@ async function getMuseumBuckets({
       },
       query: {
         bool: {
-          filter: boundingBox
-            ? {
-                geo_bounding_box: {
-                  location: boundingBox
-                }
+          ...(boundingBox && {
+            filter: {
+              geo_bounding_box: {
+                location: boundingBox
               }
-            : undefined,
-          must: query
-            ? {
-                multi_match: {
-                  operator: "and",
-                  query
-                }
+            }
+          }),
+          ...(query && {
+            must: {
+              multi_match: {
+                operator: "and",
+                query
               }
-            : undefined
+            }
+          })
         }
       }
     },
@@ -175,22 +175,22 @@ async function getMuseumHits({
     body: {
       query: {
         bool: {
-          filter: boundingBox
-            ? {
-                geo_bounding_box: {
-                  location: boundingBox
-                }
+          ...(boundingBox && {
+            filter: {
+              geo_bounding_box: {
+                location: boundingBox
               }
-            : undefined,
+            }
+          }),
           minimum_should_match: 1,
-          must: query
-            ? {
-                multi_match: {
-                  operator: "and",
-                  query
-                }
+          ...(query && {
+            must: {
+              multi_match: {
+                operator: "and",
+                query
               }
-            : undefined,
+            }
+          }),
           should: boundingBoxesToUnpack.map(box => ({
             bool: {
               filter: {

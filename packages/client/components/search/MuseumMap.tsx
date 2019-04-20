@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { divIcon, LatLngTuple, point } from "leaflet";
+import { divIcon, LatLngExpression, LatLngTuple, point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { clamp } from "lodash";
 import React, { Ref } from "react";
@@ -12,6 +12,7 @@ export type MoveHandler = (box: IBoundingBox) => void;
 
 /** MuseumMap component props. */
 export interface IMuseumMapProps {
+  initialCenter: LatLngExpression;
   query?: string;
   boundingBox?: object;
   leafletMapRef?: Ref<Map>;
@@ -127,6 +128,7 @@ function redHighlightMarker(museum?: any) {
 export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
   data: { loading, museumMapObjects },
   highlightedMuseum,
+  initialCenter,
   leafletMapRef,
   onMove
 }) {
@@ -155,7 +157,7 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
         <LoadingSpinner loading={loading} />
       </div>
       <Map
-        center={[38.810338, -98.323266]}
+        center={initialCenter}
         className="h-100"
         onmove={onMoveInternal}
         ref={leafletMapRef}

@@ -169,10 +169,7 @@ Array [
         },
       },
       "query": Object {
-        "bool": Object {
-          "filter": undefined,
-          "must": undefined,
-        },
+        "bool": Object {},
       },
     },
     "index": "museums",
@@ -187,9 +184,7 @@ Array [
     "body": Object {
       "query": Object {
         "bool": Object {
-          "filter": undefined,
           "minimum_should_match": 1,
-          "must": undefined,
           "should": Array [
             Object {
               "bool": Object {
@@ -296,7 +291,6 @@ Array [
               },
             },
           },
-          "must": undefined,
         },
       },
     },

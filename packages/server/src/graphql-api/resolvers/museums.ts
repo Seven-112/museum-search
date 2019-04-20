@@ -3,7 +3,7 @@ import { IResolverContext } from "../types";
 
 export const museums: IFieldResolver<{}, IResolverContext> = async (
   _,
-  { first, query },
+  { first, location, query },
   { esClient }
 ) => {
   const { hits } = await esClient.search({
@@ -13,7 +13,19 @@ export const museums: IFieldResolver<{}, IResolverContext> = async (
           operator: "and",
           query
         }
-      }
+      },
+      ...(location && {
+        sort: [
+          {
+            _geo_distance: {
+              location: {
+                lat: location.latitude,
+                lon: location.longitude
+              }
+            }
+          }
+        ]
+      })
     },
     index: "museums",
     size: first

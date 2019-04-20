@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`museums query returns a MuseumConnection 1`] = `
+exports[`museums query Returns a MuseumSearchConnection 1`] = `
 Object {
   "data": Object {
     "museums": Object {

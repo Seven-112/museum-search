@@ -171,6 +171,48 @@ describe("MuseumSearchPage component", () => {
         .onItemClick(testMuseum);
     });
 
-    expect(flyToSpy).lastCalledWith([37.750982, -85.363281], 15);
+    expect(flyToSpy).lastCalledWith([37.750982, -85.363281], 15, {
+      duration: 1
+    });
+  });
+
+  it("Passes a default location prop to the MuseumList.", () => {
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={MOCK_ROUTER} />
+      </MockedProvider>
+    );
+
+    expect(wrapper.find(MuseumList).prop("location")).toEqual({
+      latitude: 38.810338,
+      longitude: -98.323266
+    });
+  });
+
+  it("Changes the MuseumList's 'location' prop when the map is moved.", () => {
+    // Un-debounce the onMapMove function for this test.
+    jest.spyOn(require("lodash"), "debounce").mockImplementationOnce(fn => fn);
+
+    const wrapper = mount(
+      <MockedProvider>
+        <MuseumSearchPage router={MOCK_ROUTER} />
+      </MockedProvider>
+    );
+
+    act(() => {
+      wrapper.find(MuseumMap).prop("onMove")({
+        bottom: 3,
+        left: 2,
+        right: 4,
+        top: 1
+      });
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find(MuseumList).prop("location")).toEqual({
+      latitude: 2,
+      longitude: 3
+    });
   });
 });

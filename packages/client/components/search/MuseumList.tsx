@@ -2,11 +2,21 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 
+export interface ICoordinate {
+  latitude: number;
+  longitude: number;
+}
+
 /** MuseumList component props. */
 export interface IMuseumListProps {
   onItemHover: (hoveredItem: object) => void;
   onItemClick: (hoveredItem: object) => void;
+
+  /** Keyword search query. */
   query?: string;
+
+  /** Coordinate to sort by geo-distance. */
+  location?: ICoordinate;
 }
 
 /** MuseumList query response. */
@@ -17,12 +27,13 @@ interface IMuseumListResponse {
 /** MuseumList query variables. */
 interface IMuseumListVariables {
   query?: string;
+  location?: ICoordinate;
 }
 
 /** MuseumList query. */
 export const GET_MUSEUM_LIST = gql`
-  query($query: String) {
-    museums(query: $query, first: 50) {
+  query museumListQuery($query: String, $location: Coordinate) {
+    museums(query: $query, location: $location, first: 50) {
       edges {
         node {
           id
@@ -45,8 +56,9 @@ const withMuseumList = graphql<
   IMuseumListResponse,
   IMuseumListVariables
 >(GET_MUSEUM_LIST, {
-  options: ({ query }) => ({
+  options: ({ location, query }) => ({
     variables: {
+      location,
       query
     }
   })

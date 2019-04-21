@@ -3,11 +3,8 @@ import { createTestClient } from "apollo-server-testing";
 import { Client, SearchResponse } from "elasticsearch";
 import { createServer } from "../../createServer";
 
-const SPACE_MUSEUM_QUERY = gql`
-  query spaceMuseumQuery(
-    $query: String = "space museum"
-    $location: Coordinate
-  ) {
+const MUSEUM_QUERY = gql`
+  query spaceMuseumQuery($query: String, $location: Coordinate) {
     museums(query: $query, location: $location, first: 2) {
       edges {
         cursor
@@ -91,8 +88,11 @@ describe("museums query", () => {
     jest.clearAllMocks();
   });
 
-  it("Returns a MuseumSearchConnection", async () => {
-    const result = await query({ query: SPACE_MUSEUM_QUERY });
+  it("Returns a MuseumSearchConnection when a query is specified.", async () => {
+    const result = await query({
+      query: MUSEUM_QUERY,
+      variables: { query: "space museum" }
+    } as any);
     expect(result).toMatchSnapshot();
 
     expect(mockSearch).lastCalledWith({
@@ -111,7 +111,7 @@ describe("museums query", () => {
 
   it("Sends a geo-distance Elasticsearch query when location is specified.", async () => {
     await query({
-      query: SPACE_MUSEUM_QUERY,
+      query: MUSEUM_QUERY,
       variables: {
         location: { latitude: 39.6902721, longitude: -98.2425472 }
       }
@@ -119,12 +119,6 @@ describe("museums query", () => {
 
     expect(mockSearch).lastCalledWith({
       body: {
-        query: {
-          multi_match: {
-            operator: "and",
-            query: "space museum"
-          }
-        },
         sort: [
           { _geo_distance: { location: { lat: 39.6902721, lon: -98.2425472 } } }
         ]

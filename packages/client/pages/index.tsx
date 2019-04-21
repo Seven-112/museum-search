@@ -125,7 +125,7 @@ export function MuseumSearchPage({
               location={listSearchCoordinate}
               onItemClick={flyToMuseum}
               onItemHover={setHighlightedMuseum}
-              query={router.query.q || "museum"}
+              query={router.query.q}
             />
           </div>
         </div>

@@ -5,9 +5,12 @@
 
 Multi-container application providing a UI and GraphQL API to search museum names and locations.
 
-You can filter the search results in the list and map UI using a keyword search. Zoom
-in on the map to get museum counts by more precise areas and see labeled pins on the map for
+* Filter the search results in the list and map UI using a keyword search.
+
+* Zoom in on the map to get museum counts by more precise areas and see labeled pins on the map for
 individual museums.
+
+* Hover over a museum item on the list to highlight that museum on the map. Click on the list item to zoom the map to that museum.
 
 ![Screenshot](/docs/screenshot.png)
 

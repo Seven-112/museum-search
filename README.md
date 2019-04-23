@@ -24,7 +24,7 @@ This application runs on a multi-container stack including:
 
 ## Continuous Integration / Continuous Delivery
 
-This repo uses Travis for continuous integration.
+This repo uses Travis for continuous integration and continuous delivery.
 
 On every commit and pull request, Travis runs the test suite, and reports success/failure and test
 coverage. It sends the test reports to CodeClimate, which provides code quality analysis and test

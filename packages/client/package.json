@@ -2,6 +2,7 @@
   "name": "museum-search-client",
   "version": "1.1.1",
   "scripts": {
+    "codegen": "apollo client:codegen --target typescript --localSchemaFile ../server/src/graphql-api/schema.gql --includes \"**/*.tsx\"",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
     "test": "tsc && jest",
@@ -9,6 +10,7 @@
     "next": "next",
     "dev": "run-p next proxy",
     "proxy": "micro-proxy -r ./dev-proxy-config.json -p 9000",
+    "postinstall": "run-s codegen",
     "build": "next build && next export -o ./build",
     "start": "http-server -p 3000 ./build"
   },
@@ -44,6 +46,7 @@
     "@types/react-dom": "^16.8.3",
     "@types/react-leaflet": "^1.1.6",
     "@types/styled-jsx": "^2.2.7",
+    "apollo": "^2.9.0",
     "babel-jest": "^24.0.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",

@@ -5,37 +5,22 @@ import { clamp } from "lodash";
 import React, { Ref } from "react";
 import { graphql } from "react-apollo";
 import { Map, Marker, TileLayer } from "react-leaflet";
+import { GeoBoundingBoxInput } from "../../__generated__/globalTypes";
 import "../../style/MuseumMap.css";
 import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
+import {
+  MuseumMapObjectsQuery,
+  MuseumMapObjectsQueryVariables
+} from "./__generated__/MuseumMapObjectsQuery";
 
-export type MoveHandler = (box: IBoundingBox) => void;
+export type MoveHandler = (box: GeoBoundingBoxInput) => void;
 
 /** MuseumMap component props. */
-export interface IMuseumMapProps {
+export interface IMuseumMapProps extends MuseumMapObjectsQueryVariables {
   initialCenter: LatLngExpression;
-  query?: string;
-  boundingBox?: object;
   leafletMapRef?: Ref<Map>;
   onMove?: MoveHandler;
   highlightedMuseum?: any;
-}
-
-/** MuseumMap query response. */
-interface IMuseumMapResponse {
-  museumMapObjects?: any;
-}
-
-/** MuseumMap query variables. */
-interface IMuseumMapVariables {
-  query?: string;
-  boundingBox?: object;
-}
-
-export interface IBoundingBox {
-  bottom: number;
-  left: number;
-  right: number;
-  top: number;
 }
 
 // tslint:disable-next-line: no-var-requires
@@ -45,7 +30,10 @@ const RED_MARKER_IMG = require("../../img/marker-icon-red.png");
 
 /** MuseumMapObjects query. */
 export const GET_MUSEUM_MAP_OBJECTS = gql`
-  query museumMapObjects($query: String, $boundingBox: GeoBoundingBoxInput) {
+  query MuseumMapObjectsQuery(
+    $query: String
+    $boundingBox: GeoBoundingBoxInput
+  ) {
     museumMapObjects(query: $query, boundingBox: $boundingBox) {
       edges {
         ... on MuseumSearchEdge {
@@ -74,8 +62,8 @@ export const GET_MUSEUM_MAP_OBJECTS = gql`
 /** Higher-order component to provide data from the GraphQL API to a React component. */
 const withMuseumMapObjects = graphql<
   IMuseumMapProps,
-  IMuseumMapResponse,
-  IMuseumMapVariables
+  MuseumMapObjectsQuery,
+  MuseumMapObjectsQueryVariables
 >(GET_MUSEUM_MAP_OBJECTS, {
   options: ({ boundingBox, query }) => ({
     variables: {
@@ -141,7 +129,7 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
 
     const leafletBox = event.target.getBounds();
 
-    const boundingBox: IBoundingBox = {
+    const boundingBox: GeoBoundingBoxInput = {
       bottom: clamp(leafletBox.getSouth(), -90, 90),
       left: clamp(leafletBox.getWest(), -180, 180),
       right: clamp(leafletBox.getEast(), -180, 180),
@@ -178,7 +166,7 @@ export const MuseumMap = withMuseumMapObjects(function MuseumMapInternal({
 /**
  * Marker group component that only re-renders when the passed list of museums changes.
  */
-class MarkerGroup extends React.Component<IMuseumMapResponse> {
+class MarkerGroup extends React.Component<MuseumMapObjectsQuery> {
   public render() {
     const { museumMapObjects } = this.props;
 
@@ -209,7 +197,7 @@ class MarkerGroup extends React.Component<IMuseumMapResponse> {
     );
   }
 
-  public shouldComponentUpdate({ museumMapObjects }: IMuseumMapResponse) {
+  public shouldComponentUpdate({ museumMapObjects }: MuseumMapObjectsQuery) {
     // Only render if the museum list is different.
     return museumMapObjects !== this.props.museumMapObjects;
   }

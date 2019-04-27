@@ -5,13 +5,10 @@ import dynamic from "next/dynamic";
 import { withRouter, WithRouterProps } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Map } from "react-leaflet";
+import { Coordinate, GeoBoundingBoxInput } from "../__generated__/globalTypes";
 import { Head } from "../components/Head";
-import { ICoordinate, MuseumList } from "../components/search/MuseumList";
-import {
-  IBoundingBox,
-  IMuseumMapProps,
-  MoveHandler
-} from "../components/search/MuseumMap";
+import { MuseumList } from "../components/search/MuseumList";
+import { IMuseumMapProps, MoveHandler } from "../components/search/MuseumMap";
 
 interface IMuseumSearchPageQuery {
   q?: string;
@@ -45,11 +42,11 @@ export function MuseumSearchPage({
   const listContainer = useRef<HTMLDivElement>();
   const leafletMap = useRef<Map>();
 
-  const [boundingBox, setBoundingBox] = useState<IBoundingBox>();
+  const [boundingBox, setBoundingBox] = useState<GeoBoundingBoxInput>();
   const [highlightedMuseum, setHighlightedMuseum] = useState<object>();
 
   /** Coordinate from which to sort the museum list query by geo-distance. */
-  const listSearchCoordinate: ICoordinate = boundingBox
+  const listSearchCoordinate: Coordinate = boundingBox
     ? {
         latitude: (boundingBox.top + boundingBox.bottom) / 2,
         longitude: (boundingBox.left + boundingBox.right) / 2

@@ -1,38 +1,20 @@
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
-
-export interface ICoordinate {
-  latitude: number;
-  longitude: number;
-}
+import {
+  MuseumListQuery,
+  MuseumListQueryVariables
+} from "./__generated__/MuseumListQuery";
 
 /** MuseumList component props. */
-export interface IMuseumListProps {
+export interface IMuseumListProps extends MuseumListQueryVariables {
   onItemHover: (hoveredItem: object) => void;
   onItemClick: (hoveredItem: object) => void;
-
-  /** Keyword search query. */
-  query?: string;
-
-  /** Coordinate to sort by geo-distance. */
-  location?: ICoordinate;
-}
-
-/** MuseumList query response. */
-interface IMuseumListResponse {
-  museums: any;
-}
-
-/** MuseumList query variables. */
-interface IMuseumListVariables {
-  query?: string;
-  location?: ICoordinate;
 }
 
 /** MuseumList query. */
 export const GET_MUSEUM_LIST = gql`
-  query museumListQuery($query: String, $location: Coordinate) {
+  query MuseumListQuery($query: String, $location: Coordinate) {
     museums(query: $query, location: $location, first: 50) {
       edges {
         node {
@@ -53,8 +35,8 @@ export const GET_MUSEUM_LIST = gql`
 /** Higher-order component to provide data from the GraphQL API to a React component. */
 const withMuseumList = graphql<
   IMuseumListProps,
-  IMuseumListResponse,
-  IMuseumListVariables
+  MuseumListQuery,
+  MuseumListQueryVariables
 >(GET_MUSEUM_LIST, {
   options: ({ location, query }) => ({
     variables: {

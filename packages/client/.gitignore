@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# generated graphql types
+/**/__generated__
+
 # testing
 /coverage
 

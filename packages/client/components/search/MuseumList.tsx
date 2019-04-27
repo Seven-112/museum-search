@@ -4,7 +4,7 @@ import { LoadingSpinner } from "../loading-spinner/LoadingSpinner";
 import {
   MuseumListQuery,
   MuseumListQueryVariables
-} from "./__generated__/museumListQuery";
+} from "./__generated__/MuseumListQuery";
 
 /** MuseumList component props. */
 export interface IMuseumListProps extends MuseumListQueryVariables {

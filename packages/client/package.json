@@ -10,6 +10,7 @@
     "next": "next",
     "dev": "run-p next proxy",
     "proxy": "micro-proxy -r ./dev-proxy-config.json -p 9000",
+    "postinstall": "run-s codegen",
     "build": "next build && next export -o ./build",
     "start": "http-server -p 3000 ./build"
   },
